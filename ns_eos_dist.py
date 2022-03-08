@@ -7,12 +7,12 @@ import re
 
 # This file's functions will produce the proper distribution for the NICER project
 
-def eos_radii_lambdas(eos_name, N, sigma=.01, name="test"):
+def eos_radii_lambdas(eos_name, N, m_sigma, r_sigma, name="test"):
     # Function that produces the possible masses, radii, lambdas for any equation of state
 
     eos = lalsim.SimNeutronStarEOSByName(eos_name)
     fam = lalsim.CreateSimNeutronStarFamily(eos)
-    masses = np.random.normal(1.4, 0.4, N)
+    masses = np.random.normal(1.4, m_sigma, N)
 
     working_masses = []
     working_radii = []
@@ -21,7 +21,7 @@ def eos_radii_lambdas(eos_name, N, sigma=.01, name="test"):
     for m in masses:
         try:
             radius = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
-            rr = np.random.normal(radius, sigma, 1)[0]
+            rr = np.random.normal(radius, r_sigma, 1)[0]
             kk = lalsim.SimNeutronStarLoveNumberK2(m*lal.MSUN_SI, fam)
             cc = m*lal.MRSUN_SI/rr
             Lambdas = (2/3)*kk/(cc**5)
@@ -39,28 +39,33 @@ def run_all_eos_radii_lambdas():
     # Function to run multiple eos on eos_radii
 
     all_eos = lalsim.SimNeutronStarEOSNames
-    for eos in all_eos:
-        eos_radii_lambdas(eos, 1000, name=eos)
+    for eos_name in all_eos:
+        eos_radii_lambdas(eos, 1000, .4, .4, name=eos_name)
 
 def plot_radii(datafile, name):
     # Function to plot eos' radii
 
+        pl.clf()
         data = np.loadtxt(datafile)
         masses = data[:,0]
         radii = data[:,1]
 
+        pl.rcParams.update({"font.size":18})
+        pl.figure(figsize=(20,10))
         pl.scatter(masses,radii)
         pl.xlabel("Mass")
         pl.ylabel("Radius")
-        pl.title(name)
         pl.savefig("NICER_mock_data/radii_plots/{}.png".format(name))
 
 def plot_lambdas(datafile, name, N):
     # Function to plot eos' mean produced lambdas and multiple separate eos' lambda curves
-
+    
+    pl.clf()
     data = np.loadtxt(datafile)
     masses = data[:,0]
     Lambdas = data[:,2]
+    pl.rcParams.update({"font.size":18})
+    pl.figure(figsize=(20,10))
     pl.scatter(masses,Lambdas,label=name)
 
     all_eos = lalsim.SimNeutronStarEOSNames
