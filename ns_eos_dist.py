@@ -87,7 +87,7 @@ def plot_lambdas(datafile, name, N):
                 working_masses.append(m)
             except RuntimeError:
                 break
-        pl.plot(masses,working_Lambdas,label=eos)
+        pl.plot(masses,working_Lambdas,label=eos_name)
     pl.title("Lambdas vs Masses")
     pl.legend()
     pl.savefig("NICER_mock_data/lambdas_plots/{}.png".format(name))
