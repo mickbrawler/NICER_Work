@@ -49,7 +49,7 @@ def plot_radii(datafile, name):
         masses = data[:,0]
         radii = data[:,1]
 
-        pl.plot(masses,radii)
+        pl.scatter(masses,radii)
         pl.xlabel("Mass")
         pl.ylabel("Radius")
         pl.title(name)
@@ -61,7 +61,7 @@ def plot_lambdas(datafile, name, N):
     data = np.loadtxt(datafile)
     masses = data[:,0]
     Lambdas = data[:,2]
-    pl.plot(masses,Lambdas)
+    pl.scatter(masses,Lambdas,label=name)
 
     all_eos = lalsim.SimNeutronStarEOSNames
     for eos_name in all_eos:
@@ -87,5 +87,7 @@ def plot_lambdas(datafile, name, N):
                 working_masses.append(m)
             except RuntimeError:
                 break
-        pl.plot(masses,working_Lambdas)
+        pl.plot(masses,working_Lambdas,label=eos)
+    pl.title("Lambdas vs Masses")
+    pl.legend()
     pl.savefig("NICER_mock_data/lambdas_plots/{}.png".format(name))
