@@ -98,7 +98,7 @@ def radii_gaussian_kde_plot(datafile, name, save=True):
     cfset = ax.pcolormesh(mm, rr, f, cmap='Blues')
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius')
-    pl.scatter(m,r)
+    pl.scatter(m,r,s=100,color="black")
 
     if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(name))
 
