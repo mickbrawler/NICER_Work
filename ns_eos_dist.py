@@ -64,7 +64,7 @@ def plot_radii_heat(datafile, bins, name, save=True):
     radii = data[:,1]
 
     heatmap, xedges, yedges = np.histogram2d(masses, radii, bins=bins) # creates a 2d grid with the intensities, and the coordinate values for each bin
-
+    
     pl.imshow(heatmap.T, origin='lower') # Apparently imshow transposes the image and plots the origin in the upper left by default so this is accounted for
     pl.xlabel("Mass")
     pl.ylabel("Radius")
@@ -99,6 +99,43 @@ def radii_gaussian_kde_plot(datafile, name, save=True):
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius')
     pl.scatter(m,r,s=5,color="black")
+
+    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(name))
+
+def plot_radii_kde_heat(datafile, bins, name, save=True):
+    # Plot the heat and kde of the eos' radii distribution
+
+    pl.clf()
+    fig, (ax1, ax2) = pl.subplots(1, 2)
+
+    data = np.loadtxt(datafile)
+    masses = data[:,0]
+    radii = data[:,1]
+
+    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
+    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
+
+    # Perform the kernel density estimate
+    mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arraysgg
+    positions = np.vstack([mm.ravel(), rr.ravel()])
+    pairs = np.vstack([masses, radii])
+    kernel = st.gaussian_kde(pairs)
+    f = np.reshape(kernel(positions).T, mm.shape)
+
+    ax1 = fig.gca()
+    ax1.set_xlim(m_min, m_max)
+    ax1.set_ylim(r_min, r_max)
+
+    cfset = ax1.pcolormesh(mm, rr, f, cmap='Blues')
+    ax1.set_xlabel('Mass')
+    ax1.set_ylabel('Radius')
+    ax1.scatter(masses,radii,s=5,color="black")
+
+    heatmap, xedges, yedges = np.histogram2d(masses, radii, bins=bins) # creates a 2d grid with the intensities, and the coordinate values for each bin
+    
+    ax2.imshow(heatmap.T, origin='lower') # Apparently imshow transposes the image and plots the origin in the upper left by default so this is accounted for
+    ax2.set_xlabel("Mass")
+    ax2.set_ylabel("Radius")
 
     if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(name))
 
