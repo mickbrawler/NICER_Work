@@ -191,7 +191,7 @@ def density_along_curve(datafile, N=1000):
         sum_list.append(np.sum(kernel(np.vstack([working_masses, working_radii]))*np.diff(working_masses)[0]))
     return(sum_list)
 
-def likelihood(datafile, eos_name, N=1000):
+def likelihood(datafile, params, N=1000):
     # Finds integral of eos curve over the kde of a mass-radius posterior sample
 
     # Bottom 3 lines should be separated into init() of a class in the future
@@ -199,7 +199,8 @@ def likelihood(datafile, eos_name, N=1000):
     pairs = np.vstack([masses, radii])
     kernel = st.gaussian_kde(pairs)
 
-    eos = lalsim.SimNeutronStarEOSByName(eos_name)
+    log_p1_SI, g1, g2, g3 = params
+    eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(log_p1_SI, g1, g2, g3)
     fam = lalsim.CreateSimNeutronStarFamily(eos)
     m_min = np.min(masses)
     max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
@@ -220,6 +221,7 @@ def likelihood(datafile, eos_name, N=1000):
     return(integral)
 
 def error_barplot(datafile, name): 
+    # Barplot of error of low N eos curve integral values to that of high ones
 
     eos_list = ["BHF_BBB2","KDE0V","SKOP","RS","APR4_EPP","SKI6","MPA1","AP4"]
     Ns = [100,1000,100000]
@@ -247,9 +249,8 @@ def error_barplot(datafile, name):
     ax.bar(x - width/2, N1, width, label="N_100")
     ax.bar(x + width/2, N2, width, label="N_1000")
 
-    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_xlabel('EOS Curve Sizes')
     ax.set_ylabel('Error')
-    ax.set_title('EOS Curve Sizes')
     ax.set_xticks(x)
     ax.set_xticklabels(eos_list)
     ax.legend()
