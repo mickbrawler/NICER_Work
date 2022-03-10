@@ -271,31 +271,31 @@ def plot_eos_curves(name, n_pp, n_n):
 
     n_count = 0
     while n_count < n_pp:
-        log_p1_SI = ((log_p1_SI - (.25 * p1_incr)) + ((2 * (.25 * p1_incr)) * np.random.random()))
-        g1 = ((g1 - (.25 * g1_incr)) + ((2 * (.25 * g1_incr)) * np.random.random()))
-        g2 = ((g2 - (.25 * g2_incr)) + ((2 * (.25 * g2_incr)) * np.random.random()))
-        g3 = ((g3 - (.25 * g3_incr)) + ((2 * (.25 * g3_incr)) * np.random.random()))
+        try:
+            log_p1_SI = ((log_p1_SI - (.25 * p1_incr)) + ((2 * (.25 * p1_incr)) * np.random.random()))
+            g1 = ((g1 - (.25 * g1_incr)) + ((2 * (.25 * g1_incr)) * np.random.random()))
+            g2 = ((g2 - (.25 * g2_incr)) + ((2 * (.25 * g2_incr)) * np.random.random()))
+            g3 = ((g3 - (.25 * g3_incr)) + ((2 * (.25 * g3_incr)) * np.random.random()))
 
-        eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(log_p1_SI, g1, g2, g3)
-        fam = lalsim.CreateSimNeutronStarFamily(eos)
+            eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(log_p1_SI, g1, g2, g3)
+            fam = lalsim.CreateSimNeutronStarFamily(eos)
 
-        m_min = 1.0
-        max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
-        max_mass = int(max_mass*1000)/1000
-        m_grid = np.linspace(m_min, max_mass, N)
-        m_grid = m_grid[m_grid <= max_mass]
+            m_min = 1.0
+            max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+            max_mass = int(max_mass*1000)/1000
+            m_grid = np.linspace(m_min, max_mass, N)
+            m_grid = m_grid[m_grid <= max_mass]
 
-        working_masses = []
-        working_radii = []
-        for m in m_grid:
-            try:
+            working_masses = []
+            working_radii = []
+            for m in m_grid:
                 rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
                 working_masses.append(m)
                 working_radii.append(rr)
-            except RuntimeError:
-                break
-        pl.plot(working_masses,working_radii,color="black")
-        n_count += 1
+            pl.plot(working_masses,working_radii,color="black")
+            n_count += 1
+        except RuntimeError:
+            break
 
     n_count = 0
     all_eos = lalsim.SimNeutronStarEOSNames
