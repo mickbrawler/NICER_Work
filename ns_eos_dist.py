@@ -191,7 +191,7 @@ def density_along_curve(datafile, N=1000):
         sum_list.append(np.sum(kernel(np.vstack([working_masses, working_radii]))*np.diff(working_masses)[0]))
     return(sum_list)
 
-def likelihood(datafile, params, N=1000):
+def likelihood_piecewise(datafile, params, N=1000):
     # Finds integral of eos curve over the kde of a mass-radius posterior sample
 
     # Bottom 3 lines should be separated into init() of a class in the future
@@ -255,4 +255,72 @@ def error_barplot(datafile, name):
     ax.set_xticklabels(eos_list)
     ax.legend()
     pl.savefig("NICER_mock_data/error_plots/mass_radii_{}.png".format(name))
+
+#p1 [32.8805-33.9805]
+#g1 [1.8430-4.4430]
+#g2 [1.3315-3.9315]
+#g3 [1.4315-4.0315]
+def plot_eos_curves(name):
+    # Plot n random eos piecewise parametrized curves of mass-radii, and n number of names eos mass-radii
+    
+    pl.clf()
+
+    N=1000
+    p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
+    log_p1_SI,g1,g2,g3 = 33.4305,3.143,2.6315,2.7315 
+
+    n_pp = 10
+    n_count = 0
+    while n_count < n_pp:
+        log_p1_SI = ((log_p1_SI - (.25 * p1_incr)) + ((2 * (.25 * p1_incr)) * np.random.random()))
+        g1 = ((g1 - (.25 * g1_incr)) + ((2 * (.25 * g1_incr)) * np.random.random()))
+        g2 = ((g2 - (.25 * g2_incr)) + ((2 * (.25 * g2_incr)) * np.random.random()))
+        g3 = ((g3 - (.25 * g3_incr)) + ((2 * (.25 * g3_incr)) * np.random.random()))
+
+        eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(log_p1_SI, g1, g2, g3)
+        fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+        m_min = 1.0
+        max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+        max_mass = int(max_mass*1000)/1000
+        m_grid = np.linspace(m_min, max_mass, N)
+        m_grid = m_grid[m_grid <= max_mass]
+
+        working_masses = []
+        working_radii = []
+        for m in m_grid:
+            try:
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                working_masses.append(m)
+                working_radii.append(rr)
+            except RuntimeError:
+                break
+        pl.plot(working_masses,working_radii,color="black")
+        n_count += 1
+
+    n_n = 3
+    n_count = 0
+    all_eos = lalsim.SimNeutronStarEOSNames
+    while n_count < n_n:
+        eos = lalsim.SimNeutronStarEOSByName(all_eos[n_count])
+        fam = lalsim.CreateSimNeutronStarFamily(eos)
+        
+        max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+        max_mass = int(max_mass*1000)/1000
+        m_grid = np.linspace(m_min, max_mass, N)
+        m_grid = m_grid[m_grid <= max_mass]
+
+        working_masses = []
+        working_radii = []
+        for m in m_grid:
+            try:
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                working_masses.append(m)
+                working_radii.append(rr)
+            except RuntimeError:
+                break
+        pl.plot(working_masses,working_radii,label=all_eos[n_count])
+        n_count +=1
+
+    pl.savefig("NICER_mock_data/parameter_space_radii_plots/mass_radii_{}.png".format(name))
 
