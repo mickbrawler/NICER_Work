@@ -260,7 +260,7 @@ def error_barplot(datafile, name):
 #g1 [1.8430-4.4430]
 #g2 [1.3315-3.9315]
 #g3 [1.4315-4.0315]
-def plot_eos_curves(name):
+def plot_eos_curves(name, n_pp, n_n):
     # Plot n random eos piecewise parametrized curves of mass-radii, and n number of names eos mass-radii
     
     pl.clf()
@@ -269,7 +269,6 @@ def plot_eos_curves(name):
     p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
     log_p1_SI,g1,g2,g3 = 33.4305,3.143,2.6315,2.7315 
 
-    n_pp = 10
     n_count = 0
     while n_count < n_pp:
         log_p1_SI = ((log_p1_SI - (.25 * p1_incr)) + ((2 * (.25 * p1_incr)) * np.random.random()))
@@ -298,7 +297,6 @@ def plot_eos_curves(name):
         pl.plot(working_masses,working_radii,color="black")
         n_count += 1
 
-    n_n = 3
     n_count = 0
     all_eos = lalsim.SimNeutronStarEOSNames
     while n_count < n_n:
@@ -322,5 +320,6 @@ def plot_eos_curves(name):
         pl.plot(working_masses,working_radii,label=all_eos[n_count])
         n_count +=1
 
+    pl.legend()
     pl.savefig("NICER_mock_data/parameter_space_radii_plots/mass_radii_{}.png".format(name))
 
