@@ -266,8 +266,7 @@ def plot_eos_curves(name, n_pp, n_n):
     pl.clf()
 
     N=1000
-#    p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
-    p1_incr, g1_incr, g2_incr, g3_incr = .55, 1.3, 1.3, 1.3
+    p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
     log_p1_SI,g1,g2,g3 = 33.4305,3.143,2.6315,2.7315 
 
     n_count = 0
