@@ -4,3 +4,4 @@ NICER_mock_data/mean_radii_lambdas/
 NICER_mock_data/outdated/
 __pycache__/
 posterior_samples/
+NICER_mock_data/MCMC_results/
