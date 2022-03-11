@@ -256,11 +256,13 @@ def error_barplot(datafile, name):
     ax.legend()
     pl.savefig("NICER_mock_data/error_plots/mass_radii_{}.png".format(name))
 
-#p1 [32.8805-33.9805]
-#g1 [1.8430-4.4430]
-#g2 [1.3315-3.9315]
-#g3 [1.4315-4.0315]
-def plot_eos_curves(name, n_pp, n_n):
+# altered
+#p1 [33.275399244401434-33.55080882234776]
+#g1 [2.6168480380843007-3.2142052715754117]
+#g2 [2.8393440753622485-3.380399843127479]
+#g3 [2.5282721765465537-3.2762125079818984]
+
+def plot_random_eos_curves(name, n_pp, n_n):
     # Plot n random eos piecewise parametrized curves of mass-radii, and n number of names eos mass-radii
     
     pl.clf()
@@ -268,6 +270,9 @@ def plot_eos_curves(name, n_pp, n_n):
     N=1000
     p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
     log_p1_SI,g1,g2,g3 = 33.4305,3.143,2.6315,2.7315 
+
+#    p1_incr, g1_incr, g2_incr, g3_incr = 0.13770478897,0.29867861674, 0.27052788388, 0.37397016571
+#    log_p1_SI,g1,g2,g3 = 33.4131040334, 2.91552665482, 3.10987195924, 2.90224234226
 
     n_count = 0
     while n_count < n_pp:
@@ -325,3 +330,82 @@ def plot_eos_curves(name, n_pp, n_n):
     pl.ylabel("Radius")
     pl.savefig("NICER_mock_data/parameter_space_radii_plots/mass_radii_{}.png".format(name))
 
+
+def plot_permutation_eos_curves(name):
+    # Plot all parameter space permutation piecewise parametrized curves of mass-radii, and some named eos mass-radii
+    
+    pl.clf()
+    N = 1000
+    p1_incr, g1_incr, g2_incr, g3_incr = .4575, .927, 1.1595, .9285
+    log_p1_SI, g1, g2, g3 = 33.4305,3.143,2.6315,2.7315 
+
+    bounds = np.array([p1_incr, g1_incr, g2_incr, g3_incr])
+    midpoints = np.array([log_p1_SI, g1, g2, g3])
+
+    upper_bounds = midpoints + bounds
+    lower_bounds = midpoints - bounds
+
+    p1s = np.array([lower_bounds[0],midpoints[0],upper_bounds[0]])
+    g1s = np.array([lower_bounds[1],midpoints[1],upper_bounds[1]])
+    g2s = np.array([lower_bounds[2],midpoints[2],upper_bounds[2]])
+    g3s = np.array([lower_bounds[3],midpoints[3],upper_bounds[3]])
+
+    permutations = []
+    for p1 in p1s:
+        for g1 in g1s:
+            for g2 in g2s:
+                for g3 in g3s:
+                    permutations.append([p1,g1,g2,g3])
+    
+    permutations.append(list(midpoints)) # So the black line overlaps the gray ones
+    for permutation in permutations:
+        try:
+            log_p1_SI, g1, g2, g3 = permutation
+            eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(log_p1_SI, g1, g2, g3)
+            fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+            m_min = 1.0
+            max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+            max_mass = int(max_mass*1000)/1000
+            m_grid = np.linspace(m_min, max_mass, N)
+            m_grid = m_grid[m_grid <= max_mass]
+
+            working_masses = []
+            working_radii = []
+            for m in m_grid:
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                working_masses.append(m)
+                working_radii.append(rr)
+                if permutation == list(midpoints): color = "black"
+                else: color = "gray"
+            pl.plot(working_masses, working_radii, color = color)
+        except RuntimeError:
+            continue
+
+    eos_list = ["BHF_BBB2", "APR4_EPP", "SK255", "MS1"]
+    for eos_name in eos_list:
+        try:
+            eos = lalsim.SimNeutronStarEOSByName(eos_name)
+            fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+            m_min = 1.0
+            max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+            max_mass = int(max_mass*1000)/1000
+            m_grid = np.linspace(m_min, max_mass, N)
+            m_grid = m_grid[m_grid <= max_mass]
+
+            working_masses = []
+            working_radii = []
+            for m in m_grid:
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                working_masses.append(m)
+                working_radii.append(rr)
+            pl.plot(working_masses, working_radii, label=eos_name)
+        except RuntimeError:
+            continue
+
+    pl.legend()
+    pl.xlabel("Mass")
+    pl.xlim(left=m_min)
+    pl.ylabel("Radius")
+    pl.savefig("NICER_mock_data/permutation_plots/mass_radii_{}.png".format(name))
