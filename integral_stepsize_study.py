@@ -65,6 +65,8 @@ def plot_m_eos_val_on_kde(datafile, MCMC_distribution_file1, MCMC_distribution_f
 
     parameters_list = global_max_dictionary(MCMC_distribution_file1, MCMC_distribution_file2, "whatever", save=False)
 
+    count = 0
+    label_list = ["N=1000","N=10,000"]
     for parameters in parameters_list:
 
         log_p1_SI, g1, g2, g3, _ = parameters
@@ -86,7 +88,8 @@ def plot_m_eos_val_on_kde(datafile, MCMC_distribution_file1, MCMC_distribution_f
                 continue
             except IndexError:
                 continue
-        pl.plot(working_masses,working_radii,label=[log_p1_SI, g1, g2, g3])
+        pl.plot(working_masses,working_radii,label=label_list[count])
+        count += 1
 
     pl.legend()
     pl.savefig("NICER_mock_data/MCMC_results/mass_radii_plots/mass_radii_{}.png".format(name))
@@ -122,5 +125,6 @@ def plot_parameter_distribution(filename1, filename2, name):
     axes[1,1].axvline(APR4_EPP_g3)
 
     pl.tight_layout()
+    pl.legend(labels=["N=1000","N=10,000"])
     pl.savefig("NICER_mock_data/MCMC_results/parameter_plots/parameter_space_{}.png".format(name))
 
