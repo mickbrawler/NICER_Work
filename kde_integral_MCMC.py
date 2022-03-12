@@ -45,6 +45,7 @@ class param_distro:
         post_g2 = []
         post_g3 = []
         post_l = []
+        counter = 0
         while len(post_p1) <= (self.transitions-1):
             
             no_error = False
@@ -77,6 +78,8 @@ class param_distro:
             post_g1.append(g1_choice1)
             post_g2.append(g2_choice1)
             post_g3.append(g3_choice1)
+            print(counter)
+            counter += 1
        
         data = {"p1" : post_p1, "g1" : post_g1, "g2" : post_g2, "g3" : post_g3, "l" : post_l}
         with open(outputfile, "w") as f:
@@ -109,7 +112,6 @@ class param_distro:
     
 def global_max_dictionary(filename, outputfile, save=False):
 # Given parameter distribution dictionary, it produces a global maximum
-# parameter dictionary per each eos
 
     with open(filename, "r") as f:
         data = json.load(f)
@@ -175,6 +177,7 @@ def plot_m_eos_val_on_kde(datafile, MCMC_distribution_file, name, N=1000):
         except IndexError:
             continue
     pl.plot(working_masses,working_radii,label=[log_p1_SI, g1, g2, g3])
+    
 
     pl.savefig("NICER_mock_data/MCMC_results/mass_radii_plots/mass_radii_{}.png".format(name))
 
