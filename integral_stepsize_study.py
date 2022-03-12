@@ -125,6 +125,6 @@ def plot_parameter_distribution(filename1, filename2, name):
     axes[1,1].axvline(APR4_EPP_g3)
 
     pl.tight_layout()
-    pl.legend(labels=["N=1000","N=10,000"])
+    pl.legend(labels=["N=1,000","N=10,000"])
     pl.savefig("NICER_mock_data/MCMC_results/parameter_plots/parameter_space_{}.png".format(name))
 
