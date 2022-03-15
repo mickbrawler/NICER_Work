@@ -45,7 +45,6 @@ class param_distro:
         post_g2 = []
         post_g3 = []
         post_l = []
-        counter = 0
         while len(post_p1) <= (self.transitions-1):
             
             no_error = False
@@ -78,8 +77,6 @@ class param_distro:
             post_g1.append(g1_choice1)
             post_g2.append(g2_choice1)
             post_g3.append(g3_choice1)
-            print(counter)
-            counter += 1
        
         data = {"p1" : post_p1, "g1" : post_g1, "g2" : post_g2, "g3" : post_g3, "l" : post_l}
         with open(outputfile, "w") as f:
@@ -167,11 +164,14 @@ def plot_m_eos_val_on_kde(datafile, MCMC_distribution_file, name, N=1000):
 
     working_masses = []
     working_radii = []
+    counter = 1
     for m in m_grid:
         try:
             rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
             working_masses.append(m)
             working_radii.append(rr)
+            print(counter)
+            counter += 1
         except RuntimeError:
             continue
         except IndexError:
