@@ -28,10 +28,14 @@ class param_distro:
         no_error = False
         while no_error == False:
             
-            p1_choice1 = ((log_p1_SI - p1_incr) + ((2 * p1_incr) * np.random.random()))
-            g1_choice1 = ((g1 - g1_incr) + ((2 * g1_incr) * np.random.random()))
-            g2_choice1 = ((g2 - g2_incr) + ((2 * g2_incr) * np.random.random()))
-            g3_choice1 = ((g3 - g3_incr) + ((2 * g3_incr) * np.random.random()))
+            p1_choice1 = ((log_p1_SI - p1_incr) +
+                         ((2 * p1_incr) * np.random.random()))
+            g1_choice1 = ((g1 - g1_incr) +
+                         ((2 * g1_incr) * np.random.random()))
+            g2_choice1 = ((g2 - g2_incr) +
+                         ((2 * g2_incr) * np.random.random()))
+            g3_choice1 = ((g3 - g3_incr) +
+                         ((2 * g3_incr) * np.random.random()))
 
             try:
                 L1 = self.likelihood([p1_choice1,g1_choice1,g2_choice1,g3_choice1])
@@ -50,10 +54,14 @@ class param_distro:
             no_error = False
             while no_error == False:
                 
-                p1_choice2 = ((log_p1_SI - p1_incr) + ((2 * p1_incr) * np.random.random()))
-                g1_choice2 = ((g1 - g1_incr) + ((2 * g1_incr) * np.random.random()))
-                g2_choice2 = ((g2 - g2_incr) + ((2 * g2_incr) * np.random.random()))
-                g3_choice2 = ((g3 - g3_incr) + ((2 * g3_incr) * np.random.random()))
+                p1_choice2 = ((log_p1_SI - p1_incr) +
+                             ((2 * p1_incr) * np.random.random()))
+                g1_choice2 = ((g1 - g1_incr) +
+                             ((2 * g1_incr) * np.random.random()))
+                g2_choice2 = ((g2 - g2_incr) +
+                             ((2 * g2_incr) * np.random.random()))
+                g3_choice2 = ((g3 - g3_incr) +
+                             ((2 * g3_incr) * np.random.random()))
 
                 try:
                     L2 = self.likelihood([p1_choice2,g1_choice2,g2_choice2,g3_choice2])
