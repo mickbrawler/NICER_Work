@@ -25,4 +25,4 @@ def likelihood(params, kernel):
             continue
     
     integral = np.sum(np.array(kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0])
-    return(integral)
+    return integral
