@@ -93,7 +93,8 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
     names = ["APR4_EPP", "Max Likelihood"]
 
     x = 0
-    for combo in [true_parameters, max_parameters]:
+    combos = [true_parameters, max_parameters]
+    for combo in combos:
 
         log_p1_SI, g1, g2, g3 = combo
 
@@ -118,6 +119,7 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
         pl.plot(working_masses,working_radii,label=names[x])
         x += 1
 
+    pl.legend()
     pl.savefig("emcee_files/plots/mass_radii_{}.png".format(label))
 
 def plot_parameter_distribution(filename, label):
