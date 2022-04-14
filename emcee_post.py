@@ -2,6 +2,7 @@ import numpy as np
 import pylab as pl
 import seaborn as sns
 import scipy.stats as st
+import scipy
 import likelihood
 import lalsimulation as lalsim
 import lal
@@ -147,6 +148,33 @@ def plot_parameter_distribution(filename, label):
     pl.tight_layout()
     pl.savefig("emcee_files/plots/dist_kde_{}.png".format(label))
 
-#def p_vs_rho():
+def p_vs_rho(filename, label):
 
+    samples = np.loadtxt(filename)
+    
+    min_log_pressure = 27.5
+    low_confidence_vals = []
+    average_vals = []
+    high_confidence_vals = []
+    for sample in samples:
+
+        p1, g1, g2, g3 = sample
+        eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
+        max_log_pressure = np.log10(lalsim.SimNeutronStarEOSMaxPressure(eos))
+        logp_grid = np.linspace(min_log_pressure, max_log_pressure, 100)
+        density_grid = []
+
+        for lp in logp_grid:
+            density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+
+            length = len(density_grid)
+            mean = np.mean(np.array(density_grid))
+            h = scipy.stats.t.ppf((1+.90) / 2., length - 1)
+            low_confidence_vals.append(mean - h)
+            average_vals.append(mean)
+            high_confidence_vals.append(mean + h)
+
+    p_vals = [low_confidence_vals, average_vals, high_confidence_vals]
+    outputfile = "emcee_files/runs/p_vs_rho_{}.txt".format(label)
+    np.savetxt(outputfile, p_vals)
 
