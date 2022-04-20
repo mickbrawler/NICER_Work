@@ -8,6 +8,8 @@ import json
 import scipy.stats as st
 import seaborn as sns
 
+# homemade MCMC class to obtain [p1,g1,g2,g3] distributions
+
 class param_distro:
 
     def __init__(self, N, transitions, datafile):

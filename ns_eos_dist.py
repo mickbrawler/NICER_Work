@@ -6,9 +6,9 @@ import glob
 import re
 import scipy.stats as st
 
-# This file's functions will produce the proper distribution for the NICER project
+# This file's functions will produce the proper mass radius distribution for the NICER project
 
-def eos_radii_posterior(eos_name, N, name="test"):
+def eos_radii_posterior(eos_name, N, label):
     # Function that produces the possible masses and radii for any equation of state
 
     m_sigma = .4
@@ -22,24 +22,21 @@ def eos_radii_posterior(eos_name, N, name="test"):
     N_count = 0
     while N_count < N:
         try:
-            m = np.random.normal(1.4, m_sigma, 1)[0]
-            if m < 1.0: continue
-            radius = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
-            rr = np.random.normal(radius, r_sigma, 1)[0]
-            kk = lalsim.SimNeutronStarLoveNumberK2(m*lal.MSUN_SI, fam)
-            cc = m*lal.MRSUN_SI/rr
-            Lambdas = (2/3)*kk/(cc**5)
+            m = np.random.normal(1.4, m_sigma, 1)[0] # mean mass of 1.4, standard deviation of m_sigma
+            if m < 1.0: continue # mass can't be less than 1 solar mass
+            radius = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam) # actual radius for m given eos
+            rr = np.random.normal(radius, r_sigma, 1)[0] # tampered radius to simulate weak signal
             working_masses.append(m)
             working_radii.append(rr)
             N_count += 1
-        except RuntimeError:
+        except RuntimeError: # ??? Error may have resulted from radius calculation (bad m)
             continue
 
     output = np.vstack((working_masses,working_radii)).T
-    outputfile = "NICER_mock_data/mean_radii_lambdas/mass_radii_{}.txt".format(name)
+    outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
     np.savetxt(outputfile, output, fmt="%f\t%f")
 
-def plot_radii_scatter(datafile, name):
+def plot_radii_scatter(datafile, label):
     # Function to plot scatter of eos' radii
 
         pl.clf()
@@ -53,9 +50,9 @@ def plot_radii_scatter(datafile, name):
         pl.xlabel("Mass")
         pl.ylabel("Radius")
         pl.title("Radii vs Masses")
-        pl.savefig("NICER_mock_data/radii_plots/mass_radii_{}.png".format(name))
+        pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
 
-def plot_radii_gaussian_kde(datafile, name, save=True):
+def plot_radii_gaussian_kde(datafile, label, save=True):
     # Plot the kde of the eos' radii distribution
 
     pl.clf()
@@ -67,7 +64,7 @@ def plot_radii_gaussian_kde(datafile, name, save=True):
     r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
 
     # Perform the kernel density estimate
-    mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arraysgg
+    mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
     positions = np.vstack([mm.ravel(), rr.ravel()])
     pairs = np.vstack([m, r])
     kernel = st.gaussian_kde(pairs)
@@ -83,9 +80,9 @@ def plot_radii_gaussian_kde(datafile, name, save=True):
     ax.set_ylabel('Radius')
     pl.scatter(m,r,s=5,color="black")
 
-    if save: pl.savefig("NICER_mock_data/radii_heat_plots/mass_radii_{}.png".format(name))
+    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label)) # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
-def plot_radii_heat(datafile, bins, name, save=True):
+def plot_radii_heat(datafile, bins, label, save=True):
     # Function to plot eos' radii as heatmap
 
     pl.clf()
@@ -100,9 +97,9 @@ def plot_radii_heat(datafile, bins, name, save=True):
     pl.ylabel("Radius")
     pl.colorbar()
 
-    if save: pl.savefig("NICER_mock_data/radii_heat_plots/mass_radii_{}.png".format(name))
+    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label)) #label="APR4_EPP_m(m_sigma)_r(r_sigma)_bin(bins)"
 
-def plot_radii_kde_heat(datafile, bins, name, save=True, N=1000):
+def plot_radii_kde_heat(datafile, bins, label, save=True, N=1000):
     # Plot the heat and kde of the eos' radii distribution
 
     pl.clf()
@@ -159,7 +156,7 @@ def plot_radii_kde_heat(datafile, bins, name, save=True, N=1000):
     fig.text(0.5, 0.01, "Mass", ha="center")
     fig.text(0.01, 0.5, "Radius", va="center", rotation="vertical")
 
-    if save: pl.savefig("NICER_mock_data/radii_heat_plots/mass_radii_{}.png".format(name))
+    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label)) #label="APR4_EPP_m(m_sigma)_r(r_sigma)_sub"
 
 def density_along_curve(datafile, N=1000):
     # Finds integral of eos curves over the kde of a mass-radius posterior sample
@@ -220,7 +217,7 @@ def likelihood_piecewise(datafile, params, N=1000):
     integral = np.sum(kernel(np.vstack([working_masses, working_radii]))*np.diff(working_masses)[0])
     return(integral)
 
-def error_barplot(datafile, name): 
+def error_barplot(datafile, label):
     # Barplot of error of low N eos curve integral values to that of high ones
 
     eos_list = ["BHF_BBB2","KDE0V","SKOP","RS","APR4_EPP","SKI6","MPA1","AP4"]
@@ -254,7 +251,7 @@ def error_barplot(datafile, name):
     ax.set_xticks(x)
     ax.set_xticklabels(eos_list)
     ax.legend()
-    pl.savefig("NICER_mock_data/error_plots/mass_radii_{}.png".format(name))
+    pl.savefig("NICER_mock_data/error_plots/{}.png".format(label)) # label="APR4_EPP_N????"
 
 # altered
 #p1 [33.275399244401434-33.55080882234776]
@@ -262,7 +259,7 @@ def error_barplot(datafile, name):
 #g2 [2.8393440753622485-3.380399843127479]
 #g3 [2.5282721765465537-3.2762125079818984]
 
-def plot_random_eos_curves(name, n_pp, n_n):
+def plot_random_eos_curves(label, n_pp, n_n):
     # Plot n random eos piecewise parametrized curves of mass-radii, and n number of names eos mass-radii
     
     pl.clf()
@@ -328,10 +325,10 @@ def plot_random_eos_curves(name, n_pp, n_n):
     pl.legend()
     pl.xlabel("Mass")
     pl.ylabel("Radius")
-    pl.savefig("NICER_mock_data/parameter_space_radii_plots/mass_radii_{}.png".format(name))
+    pl.savefig("NICER_mock_data/parameter_space_radii_plots/{}.png".format(label)) # label="APR4_EPP_newbounds_(n_pp)p_(n_n)n"
 
 
-def plot_permutation_eos_curves(name):
+def plot_permutation_eos_curves(label):
     # Plot all parameter space permutation piecewise parametrized curves of mass-radii, and some named eos mass-radii
     
     pl.clf()
@@ -408,4 +405,4 @@ def plot_permutation_eos_curves(name):
     pl.xlabel("Mass")
     pl.xlim(left=m_min)
     pl.ylabel("Radius")
-    pl.savefig("NICER_mock_data/permutation_plots/mass_radii_{}.png".format(name))
+    pl.savefig("NICER_mock_data/permutation_plots/{}.png".format(label)) # label = "extreme_bounds"

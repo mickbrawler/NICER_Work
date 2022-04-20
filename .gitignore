@@ -1,9 +1,9 @@
 NASA_files/
 mass_radius_data/
 posterior_samples/
-NICER_mock_data/mean_radii_lambdas/
+studies/
+NICER_mock_data/mass_radii_posterior/
 NICER_mock_data/outdated/
 NICER_mock_data/MCMC_results/distributions/
-studies/
 emcee_files/runs/
 __pycache__/
