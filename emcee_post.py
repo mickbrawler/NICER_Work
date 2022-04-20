@@ -148,33 +148,90 @@ def plot_parameter_distribution(filename, label):
     pl.tight_layout()
     pl.savefig("emcee_files/plots/dist_kde_{}.png".format(label))
 
-def p_vs_rho(filename, label):
+def max_p_vals(filename, label):
 
     samples = np.loadtxt(filename)
-    
-    min_log_pressure = 27.5
-    low_confidence_vals = []
-    average_vals = []
-    high_confidence_vals = []
-    for sample in samples:
+
+    max_log_pressures = []
+    for sample in samples: # Obtain max pressure for each sample
 
         p1, g1, g2, g3 = sample
         eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
         max_log_pressure = np.log10(lalsim.SimNeutronStarEOSMaxPressure(eos))
-        logp_grid = np.linspace(min_log_pressure, max_log_pressure, 100)
-        density_grid = []
+        max_log_pressures.append(max_log_pressure)
 
-        for lp in logp_grid:
+    outputfile = "emcee_files/runs/max_p_{}.txt".format(label)
+    np.savetxt(outputfile, max_log_pressures)
+
+def p_vs_rho(filename, label):
+
+    samples = np.loadtxt(filename)
+
+    max_log_pressures = []
+    for sample in samples: # Obtain max pressure for each sample
+
+        p1, g1, g2, g3 = sample
+        eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
+        max_log_pressure = np.log10(lalsim.SimNeutronStarEOSMaxPressure(eos))
+        max_log_pressures.append(max_log_pressure)
+
+    global_max_log_pressure = max(max_log_pressures) # max maximum pressure
+    
+    min_log_pressure = 27.5
+    logp_grid = np.linspace(min_log_pressure, global_max_log_pressure, 100)
+    
+    density_matrix = []
+    for lp in logp_grid:
+
+        density_grid = []
+        for sample in samples:
+
+            p1, g1, g2, g3 = sample
+            eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
             density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
 
-            length = len(density_grid)
-            mean = np.mean(np.array(density_grid))
-            h = scipy.stats.t.ppf((1+.90) / 2., length - 1)
-            low_confidence_vals.append(mean - h)
-            average_vals.append(mean)
-            high_confidence_vals.append(mean + h)
+        density_matrix.append(density_grid)
 
-    p_vals = [low_confidence_vals, average_vals, high_confidence_vals]
+    lower_bound = []
+    median = []
+    higher_bound = []
+    trouble_p_vals = []
+    counter = 0
+    for p_rhos in density_matrix:
+
+        try:
+            bins, bin_bounds = np.histogram(p_rhos,bins=50,density=True)
+            counter += 1
+        except IndexError:
+            trouble_p_vals.append(logp_grid[counter])
+            counter += 1
+            continue
+
+        bin_centers = (bin_bounds[1:] + bin_bounds[:-1]) / 2
+        order = np.argsort(-bins)
+        bins_ordered = bins[order]
+        bin_cent_ord = bin_centers[order]
+        include = np.cumsum(bins_ordered) < 0.9 * np.sum(bins)
+        include[np.sum(include)] = True
+        lower_bound.append(min(bin_cent_ord[include]))
+        median.append(np.median(p_rhos))
+        higher_bound.append(max(bin_cent_ord[include]))
+
+    logp_grid = logp_grid[~np.isin(logp_grid,trouble_p_vals)]
+    rho_vals = [logp_grid, lower_bound, median, higher_bound]
     outputfile = "emcee_files/runs/p_vs_rho_{}.txt".format(label)
-    np.savetxt(outputfile, p_vals)
+    np.savetxt(outputfile, rho_vals)
 
+def p_vs_rho_plot(filename, label):
+
+    logp_grid, lower_bound, median, higher_bound = np.loadtxt(filename)
+
+    pl.plot(logp_grid, lower_bound, label="lower bound")
+    pl.plot(logp_grid, median, label="median")
+    pl.plot(logp_grid, higher_bound, label="higher bound")
+
+    pl.xlabel("Pressure")
+    pl.ylabel("Energy-Density")
+    pl.title("Pressure vs Energy-Density")
+    pl.legend()
+    pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label))
