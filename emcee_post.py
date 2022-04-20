@@ -230,8 +230,8 @@ def p_vs_rho_plot(filename, label):
     pl.plot(logp_grid, median, label="median")
     pl.plot(logp_grid, higher_bound, label="higher bound")
 
-    pl.xlabel("Pressure")
-    pl.ylabel("Energy-Density")
+    pl.xlabel("Log Pressure")
+    pl.ylabel("Log Energy-Density")
     pl.title("Pressure vs Energy-Density")
     pl.legend()
     pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label))
