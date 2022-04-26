@@ -10,6 +10,7 @@ import lal
 
 def save(data, label):
     # Function that will save emcee runs in two formats
+    # Tested out different formats for saving
 
     d_outputfile = "emcee_files/runs/detail_{}.txt".format(label)
     np.savetxt(d_outputfile, data)
@@ -253,3 +254,41 @@ def p_vs_rho_plot(filename, label, N):
     pl.legend()
     pl.xlim([10**17, 10**19])
     pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label))
+
+def snr_radius_error_plot():
+
+    # Recreating snr (m-r) distributions' names
+    m_sigmas = [.2,.4,.6,.8,1]
+    r_sigmas = [250,500,750,1000,1250]
+    N = 1000
+    Files = []
+    File_format = "emcee_files/runs/"
+    for sigma in range(len(m_sigmas)):
+        Files.append("N{}_m{}_r{}.txt".format(N,m_sigmas[sigma],r_sigmas[sigma])
+
+    eos = lalsim.SimNeutronStarEOSByName("APR4_EPP")
+    fam = lalsim.CreateSimNeutronStarFamily(eos)
+    true_radius = lalsim.SimNeutronStarRadius(1.4*lal.MSUN_SI, fam)
+
+    std_radii = []
+    for File in Files:
+
+        samples = np.loadtxt(File)
+        radii = []
+        for sample in samples: # Obtain max pressure for each sample
+
+            p1, g1, g2, g3 = sample
+            eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
+            fam = lalsim.CreateSimNeutronStarFamily(eos)
+            radius = lalsim.SimNeutronStarRadius(1.4*lal.MSUN_SI, fam)
+            radii.append(radius)
+
+        std_radii.append(np.std(radii))
+
+    snr = ((np.array(m_sigmas) ** 2) + (np.array(r_sigmas) ** 2)) ** .5
+    error = np.array(std_radii) / true_radius
+
+    pl.plot(snr,error)
+    pl.xlabel("SNR")
+    pl.ylabel("Error")
+    pl.savefig("emcee_files/plots/error_N{}_sigmas{}.png".format(N,len(m_sigmas)))

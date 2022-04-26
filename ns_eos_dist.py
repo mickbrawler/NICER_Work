@@ -8,11 +8,8 @@ import scipy.stats as st
 
 # This file's functions will produce the proper mass radius distribution for the NICER project
 
-def eos_radii_posterior(eos_name, N, label):
+def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
     # Function that produces the possible masses and radii for any equation of state
-
-    m_sigma = .4
-    r_sigma = 500
 
     eos = lalsim.SimNeutronStarEOSByName(eos_name)
     fam = lalsim.CreateSimNeutronStarFamily(eos)
@@ -35,6 +32,15 @@ def eos_radii_posterior(eos_name, N, label):
     output = np.vstack((working_masses,working_radii)).T
     outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
     np.savetxt(outputfile, output, fmt="%f\t%f")
+
+def varying_std_posterior(eos_name, N):
+    # Producing m-r posteriors of increasing m and r standard deviation
+    
+    # These sigmas may need to be changed (to more equal sigmas for both m and r)
+    m_sigmas = [.2,.4,.6,.8,1]
+    r_sigmas = [250,500,750,1000,1250]
+    for sigma in range(len(m_sigmas)):
+        eos_radii_posterior(eos_name, 1000, m_sigmas[sigma], r_sigmas[sigma], "{}_N{}_m{}_r{}".format(eos_name,N,m_sigmas[sigma],r_sigmas[sigma]))
 
 def plot_radii_scatter(datafile, label):
     # Function to plot scatter of eos' radii
