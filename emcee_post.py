@@ -255,40 +255,54 @@ def p_vs_rho_plot(filename, label, N):
     pl.xlim([10**17, 10**19])
     pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label))
 
-def snr_radius_error_plot():
+def snr_radius_error(m_sigmas, r_sigmas, N, sigmas):
 
     # Recreating snr (m-r) distributions' names
-    m_sigmas = [.2,.4,.6,.8,1]
-    r_sigmas = [250,500,750,1000,1250]
-    N = 1000
     Files = []
     File_format = "emcee_files/runs/"
     for sigma in range(len(m_sigmas)):
-        Files.append("N{}_m{}_r{}.txt".format(N,m_sigmas[sigma],r_sigmas[sigma])
+        Files.append("{}N{}_m{}_r{}.txt".format(File_format,N,m_sigmas[sigma],r_sigmas[sigma]))
 
     eos = lalsim.SimNeutronStarEOSByName("APR4_EPP")
     fam = lalsim.CreateSimNeutronStarFamily(eos)
     true_radius = lalsim.SimNeutronStarRadius(1.4*lal.MSUN_SI, fam)
 
     std_radii = []
+    count = 1
     for File in Files:
 
+        print(count)
         samples = np.loadtxt(File)
         radii = []
         for sample in samples: # Obtain max pressure for each sample
 
-            p1, g1, g2, g3 = sample
-            eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
-            fam = lalsim.CreateSimNeutronStarFamily(eos)
-            radius = lalsim.SimNeutronStarRadius(1.4*lal.MSUN_SI, fam)
-            radii.append(radius)
+            try:
+                p1, g1, g2, g3 = sample
+                eos = lalsim.SimNeutronStarEOS4ParameterPiecewisePolytrope(p1,g1,g2,g3)
+                fam = lalsim.CreateSimNeutronStarFamily(eos)
+                radius = lalsim.SimNeutronStarRadius(1.4*lal.MSUN_SI, fam)
+                radii.append(radius)
+            except RuntimeError:
+                continue
+        count += 1
 
         std_radii.append(np.std(radii))
 
     snr = ((np.array(m_sigmas) ** 2) + (np.array(r_sigmas) ** 2)) ** .5
     error = np.array(std_radii) / true_radius
 
-    pl.plot(snr,error)
+    outputfile = "emcee_files/error/N{}_sigmas{}.txt".format(N,sigmas)
+    data = [snr, error]
+    np.savetxt(outputfile, data)
+
+def snr_error_plotter(filename, N, sigmas):
+        
+    data = np.loadtxt(filename)
+
+    snr = data[0]
+    error = data[1]
+
+    pl.plot(snr, error)
     pl.xlabel("SNR")
     pl.ylabel("Error")
-    pl.savefig("emcee_files/plots/error_N{}_sigmas{}.png".format(N,len(m_sigmas)))
+    pl.savefig("emcee_files/plots/error_N{}_sigmas{}.png".format(N,sigmas))

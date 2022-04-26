@@ -2,16 +2,18 @@ import likelihood
 import emcee
 import numpy as np
 import scipy.stats as st
+import os
+import time
 
 class sampler:
 
-    def __init__(self)
+    def __init__(self):
 
-    # parameter space bounds
-    self.p1_l_b, self.p1_u_b = 32.973, 33.888
-    self.g1_l_b, self.g1_u_b = 2.216, 4.070
-    self.g2_l_b, self.g2_u_b = 1.472, 3.791
-    self.g3_l_b, self.g3_u_b = 1.803, 3.660
+        # parameter space bounds
+        self.p1_l_b, self.p1_u_b = 32.973, 33.888
+        self.g1_l_b, self.g1_u_b = 2.216, 4.070
+        self.g2_l_b, self.g2_u_b = 1.472, 3.791
+        self.g3_l_b, self.g3_u_b = 1.803, 3.660
 
     def obtain_kernel(self, filename):
 
@@ -83,13 +85,18 @@ class sampler:
         outputfile = "emcee_files/runs/{}.txt".format(label)
         np.savetxt(outputfile, flat_samples)
 
-    def run_sampler_per_snr_posterior(self):
+    def monitor(self, directory, dir_length):
+        
+        while True:
+            results = os.listdir(directory)
+            time.sleep(1)
+            if len(results) == (dir_length):
+                break
+
+    def run_sampler_per_snr_posterior(self, N, m_sigmas, r_sigmas):
         # Reruns code for each snr (m-r) posterior
 
         # Recreating snr (m-r) distributions' names
-        m_sigmas = [.2,.4,.6,.8,1]
-        r_sigmas = [250,500,750,1000,1250]
-        N = 1000
         Files = []
         File_format = "NICER_mock_data/mass_radii_posterior/mass_radii_APR4_EPP_N{}".format(N)
         for sigma in range(len(m_sigmas)):
@@ -99,4 +106,6 @@ class sampler:
         for File in Files:
             self.obtain_kernel(File)
             self.run_mcmc("N{}_m{}_r{}".format(N,m_sigmas[count],r_sigmas[count]))
+            self.monitor("./emcee_files/runs/", count+1)
             count += 1
+

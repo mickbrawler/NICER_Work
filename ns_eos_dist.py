@@ -33,12 +33,9 @@ def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
     outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
     np.savetxt(outputfile, output, fmt="%f\t%f")
 
-def varying_std_posterior(eos_name, N):
+def varying_std_posterior(m_sigmas, r_sigmas, eos_name, N):
     # Producing m-r posteriors of increasing m and r standard deviation
     
-    # These sigmas may need to be changed (to more equal sigmas for both m and r)
-    m_sigmas = [.2,.4,.6,.8,1]
-    r_sigmas = [250,500,750,1000,1250]
     for sigma in range(len(m_sigmas)):
         eos_radii_posterior(eos_name, 1000, m_sigmas[sigma], r_sigmas[sigma], "{}_N{}_m{}_r{}".format(eos_name,N,m_sigmas[sigma],r_sigmas[sigma]))
 
@@ -57,6 +54,19 @@ def plot_radii_scatter(datafile, label):
         pl.ylabel("Radius")
         pl.title("Radii vs Masses")
         pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
+
+def multiple_radii_scatter(eos_name, N, m_sigmas, r_sigmas):
+    # Function plots multiple eos' radii files
+
+    Files = []
+    File_format = "NICER_mock_data/mass_radii_posterior/"
+    for sigma in range(len(m_sigmas)):
+        Files.append("{}mass_radii_{}_N{}_m{}_r{}.txt".format(File_format,eos_name,N,m_sigmas[sigma],r_sigmas[sigma]))
+
+    count = 0
+    for File in Files:
+        plot_radii_scatter(File, "{}_N{}_m{}_r{}".format(eos_name,N,m_sigmas[count],r_sigmas[count]))
+        count += 1
 
 def plot_radii_gaussian_kde(datafile, label, save=True):
     # Plot the kde of the eos' radii distribution

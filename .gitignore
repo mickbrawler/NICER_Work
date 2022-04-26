@@ -6,4 +6,7 @@ NICER_mock_data/mass_radii_posterior/
 NICER_mock_data/outdated/
 NICER_mock_data/MCMC_results/distributions/
 emcee_files/runs/
+emcee_files/error/
+emcee_files/first_try/
+emcee_files/test_runs/
 __pycache__/
