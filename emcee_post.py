@@ -288,7 +288,10 @@ def snr_radius_error(m_sigmas, r_sigmas, N, sigmas):
 
         std_radii.append(np.std(radii))
 
-    snr = ((np.array(m_sigmas) ** 2) + (np.array(r_sigmas) ** 2)) ** .5
+    quad_data = np.loadtxt("NICER_mock_data/mass_radii_posterior/quadrature_study/APR4_EPP_N{}_sigmas{}.txt".format(N,sigmas))
+    quad_m = quad_data[0]
+    quad_r = quad_data[1]
+    snr = ((np.array(quad_m) ** 2) + (np.array(quad_r) ** 2)) ** .5
     error = np.array(std_radii) / true_radius
 
     outputfile = "emcee_files/error/N{}_sigmas{}.txt".format(N,sigmas)
