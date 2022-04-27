@@ -39,6 +39,30 @@ def varying_std_posterior(m_sigmas, r_sigmas, eos_name, N):
     for sigma in range(len(m_sigmas)):
         eos_radii_posterior(eos_name, 1000, m_sigmas[sigma], r_sigmas[sigma], "{}_N{}_m{}_r{}".format(eos_name,N,m_sigmas[sigma],r_sigmas[sigma]))
 
+def quadrature_sum_study(N, m_sigmas, r_sigmas):
+    # Get sigma_m/mean(m) and sigma_R/mean(R) for each posterior
+
+    # Recreating snr (m-r) distributions' names
+    Files = []
+    File_format = "NICER_mock_data/mass_radii_posterior/mass_radii_APR4_EPP_N{}".format(N)
+    for sigma in range(len(m_sigmas)):
+        Files.append("{}_m{}_r{}.txt".format(File_format,m_sigmas[sigma],r_sigmas[sigma]))
+
+    count = 0
+    quad_m = []
+    quad_r = []
+    for File in Files:
+        data = np.loadtxt(File)
+        masses = data[:,0]
+        radii = data[:,1]
+        quad_m.append(m_sigmas[count] / np.mean(masses))
+        quad_r.append(r_sigmas[count] / np.mean(radii))
+        count += 1
+
+    quad_vals = [quad_m, quad_r]
+    outputfile = "NICER_mock_data/mass_radii_posterior/quadrature_study/APR4_EPP_N{}_sigmas{}.txt".format(N,len(m_sigmas))
+    np.savetxt(outputfile, quad_vals)
+
 def plot_radii_scatter(datafile, label):
     # Function to plot scatter of eos' radii
 
