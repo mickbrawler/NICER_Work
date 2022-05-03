@@ -8,6 +8,18 @@ import scipy.stats as st
 
 # This file's functions will produce the proper mass radius distribution for the NICER project
 
+def mr_posterior_trimmer(filename, size, outputfile):
+    # Function that trims large real NICER m-r posterior to lower size
+    
+    data = np.loadtxt(filename)
+    choices_index = np.random.randint(len(data), size=size)
+    trimmed_data = data[choices_index,:]
+    radii = trimmed_data[:,0]
+    masses = trimmed_data[:,1]
+
+    trimmed_vals = np.vstack((masses, radii)).T
+    np.savetxt(outputfile, trimmed_vals, fmt="%f\t%f")
+
 def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
     # Function that produces the possible masses and radii for any equation of state
 
@@ -100,8 +112,11 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     m = data[:,0] 
     r = data[:,1]
 
-    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
-    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
+#    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
+#    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
+
+    m_min, m_max = int(min(m)), int(max(m)) # 1.001069, 2.157369
+    r_min, r_max = int(min(r)), int(max(r)) # 9242.634454, 13119.70321
 
     # Perform the kernel density estimate
     mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
