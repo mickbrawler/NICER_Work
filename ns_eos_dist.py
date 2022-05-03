@@ -115,8 +115,8 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
 #    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
 #    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
 
-    m_min, m_max = int(min(m)), int(max(m)) # 1.001069, 2.157369
-    r_min, r_max = int(min(r)), int(max(r)) # 9242.634454, 13119.70321
+    m_min, m_max = min(m), max(m) # 1.001069, 2.157369
+    r_min, r_max = min(r), max(r) # 9242.634454, 13119.70321
 
     # Perform the kernel density estimate
     mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
@@ -133,7 +133,7 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius')
-    pl.scatter(m,r,s=5,color="black")
+    pl.scatter(m,r,s=1,color="black")
 
     if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label)) # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
