@@ -66,7 +66,8 @@ def global_max(filename):
 def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
     # Plot the heat and kde of the eos' radii distribution
 
-    masses, radii = np.loadtxt("NICER_mock_data/mean_radii_lambdas/mass_radii_APR4_EPP_N30000.txt", unpack=True) # Mass Radius distribution of mock data
+    masses, radii = np.loadtxt("NICER_mock_data/mass_radii_posterior/used/mass_radii_APR4_EPP_N1000.txt", unpack=True) # Mass Radius distribution of mock data
+    radii = np.array(radii) / 1000
     pairs = np.vstack([masses, radii])
     kernel = st.gaussian_kde(pairs)
 
@@ -85,14 +86,15 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
 
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
-    ax.set_ylabel('Radius')
+    ax.set_ylabel('Radius (km)')
+    #ax.set_title("Visualization of Mock NICER Data")
 
     # APR4_EPP
     true_parameters = [33.275399244401434, 2.881652000854998, 3.380399843127479, 3.2762125079818984]
 
     log_p1_SI, g1, g2, g3, _ = global_max(MCMC_distribution_file)
     max_parameters = [log_p1_SI, g1, g2, g3]
-    names = ["APR4_EPP", "Max Likelihood"]
+    names = ["True EoS", "Max Likelihood"]
 
     x = 0
     combos = [true_parameters, max_parameters]
@@ -111,7 +113,7 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
         working_radii = []
         for m in m_grid:
             try:
-                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam) / 1000
                 working_masses.append(m)
                 working_radii.append(rr)
             except RuntimeError:
@@ -122,7 +124,8 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
         x += 1
 
     pl.legend()
-    pl.savefig("emcee_files/plots/mass_radii_{}.png".format(label))
+    pl.title("Visualization of Mock NICER Data")
+    pl.savefig("emcee_files/plots/mass_radii_{}.png".format(label), bbox_inches='tight')
 
 def plot_parameter_distribution(filename, label):
     # Plots distributions of "detailed" parameter distributions
@@ -249,11 +252,11 @@ def p_vs_rho_plot(filename, label, N):
     pl.plot(density_grid, logp_grid, "r-", label="True EoS")
 
     pl.xlabel("Density")
-    pl.ylabel("Pressure")
+    pl.ylabel("Log Pressure")
     pl.title("Pressure vs Density")
     pl.legend()
     pl.xlim([10**17, 10**19])
-    pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label))
+    pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
 
 def snr_radius_error(m_sigmas, r_sigmas, N, sigmas):
 
@@ -300,12 +303,16 @@ def snr_radius_error(m_sigmas, r_sigmas, N, sigmas):
 
 def snr_error_plotter(filename, N, sigmas):
         
+    pl.clf()
     data = np.loadtxt(filename)
 
     snr = data[0]
     error = data[1]
 
+    pl.rcParams.update({'font.size': 20})
+    pl.figure(figsize=(15, 10))
     pl.plot(snr, error)
-    pl.xlabel("SNR")
-    pl.ylabel("Error")
-    pl.savefig("emcee_files/plots/error_N{}_sigmas{}.png".format(N,sigmas))
+    pl.xlabel("$\\Delta$")
+    pl.ylabel("$\\frac{\\sigma[R_{1.4}]}{R_{1.4}^{\\rm True}}$")
+    pl.title("Effect of Mass-Radius Measurement on EoS Inference")
+    pl.savefig("emcee_files/plots/error_N{}_sigmas{}.png".format(N,sigmas), bbox_inches='tight')
