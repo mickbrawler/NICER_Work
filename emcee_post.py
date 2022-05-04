@@ -249,7 +249,7 @@ def p_vs_rho_plot(filename, label, N):
     pl.plot(upper_bound, logp_grid, color="blue")
     ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
     pl.plot(median, logp_grid, "k--")
-    pl.plot(density_grid, logp_grid, "r-", label="True EoS")
+    pl.plot(density_grid, logp_grid, "r-", label="APR4_EPP")
 
     pl.xlabel("Density")
     pl.ylabel("Log Pressure")

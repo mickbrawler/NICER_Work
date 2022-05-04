@@ -14,7 +14,7 @@ def mr_posterior_trimmer(filename, size, outputfile):
     data = np.loadtxt(filename)
     choices_index = np.random.randint(len(data), size=size)
     trimmed_data = data[choices_index,:]
-    radii = trimmed_data[:,0]
+    radii = trimmed_data[:,0] * 1000
     masses = trimmed_data[:,1]
 
     trimmed_vals = np.vstack((masses, radii)).T
