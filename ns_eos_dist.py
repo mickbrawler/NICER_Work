@@ -134,8 +134,9 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius')
     pl.scatter(m,r,s=1,color="black")
+    pl.title("Mass-Radius Distribution")
 
-    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label)) # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
+    if save: pl.savefig("NICER_mock_data/radii_heat_plots/{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
 def plot_radii_heat(datafile, bins, label, save=True):
     # Function to plot eos' radii as heatmap
@@ -461,3 +462,53 @@ def plot_permutation_eos_curves(label):
     pl.xlim(left=m_min)
     pl.ylabel("Radius")
     pl.savefig("NICER_mock_data/permutation_plots/{}.png".format(label)) # label = "extreme_bounds"
+
+def eos_mr_pd_curves(eos_name, N=1000):
+    # Function that produces m-r curve and p-d curve plots for any equation of state
+
+    eos = lalsim.SimNeutronStarEOSByName(eos_name)
+    fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+    m_min = 1.0
+    max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+    max_mass = int(max_mass*1000)/1000
+    masses = np.linspace(m_min, max_mass, N)
+    masses = masses[masses <= max_mass]
+
+    working_masses = []
+    working_radii = []
+    for m in masses:
+        try:
+            rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+            working_masses.append(m)
+            working_radii.append(rr)
+        except RuntimeError:
+            break
+
+    working_radii = np.array(working_radii) / 1000
+
+    pl.clf()
+    pl.plot(working_masses, working_radii)
+    pl.xlabel("Mass")
+    pl.ylabel("Radius (km)")
+    pl.title("Mass-Radius Curve")
+    pl.savefig("emcee_files/plots/{}_MR_Curve.png".format(eos_name), bbox_inches='tight')
+
+    min_log_pressure = 32.0
+    max_log_pressure = np.log10(lalsim.SimNeutronStarEOSMaxPressure(eos))
+    logp_grid = np.linspace(min_log_pressure, max_log_pressure, N)
+
+    density_grid = []
+    for lp in logp_grid:
+
+        density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+
+    pl.clf()
+    ax = pl.gca()
+    ax.set_xscale("log")
+    pl.plot(density_grid, logp_grid)
+    pl.xlim([10**17, 10**19])
+    pl.xlabel("Density")
+    pl.ylabel("Pressure")
+    pl.title("Pressure vs Density Curve")
+    pl.savefig("emcee_files/plots/{}_PD_Curve.png".format(eos_name), bbox_inches='tight')

@@ -249,13 +249,55 @@ def p_vs_rho_plot(filename, label, N):
     pl.plot(upper_bound, logp_grid, color="blue")
     ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
     pl.plot(median, logp_grid, "k--")
-    pl.plot(density_grid, logp_grid, "r-", label="APR4_EPP")
+    #pl.plot(density_grid, logp_grid, "r-", label="APR4_EPP")
 
+    pl.xlim([10**17, 10**19])
     pl.xlabel("Density")
     pl.ylabel("Log Pressure")
     pl.title("Pressure vs Density")
     pl.legend()
+    pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
+
+def p_vs_rho_plot_multiple(filename, label, N):
+
+    logp_grid, lower_bound, median, upper_bound = np.loadtxt(filename)
+
+    ax = pl.gca()
+    ax.set_xscale("log")
+
+    size = 1
+    pl.plot(lower_bound, logp_grid, color="blue")
+    pl.plot(upper_bound, logp_grid, color="blue")
+    ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
+    pl.plot(median, logp_grid, "k--")
+
+    min_log_pressure = 32.0
+    max_log_pressure = max(logp_grid)
+
+    eos_list = ["APR4_EPP", "SLY", "H4", "KDE0V", "MS1B", "MS1"]
+    eos_density_grids = []
+    for eos_name in eos_list:
+
+        eos = lalsim.SimNeutronStarEOSByName(eos_name)
+        logp_grid = np.linspace(min_log_pressure, max_log_pressure, N)
+
+        pressure_grid = []
+        density_grid = []
+        for lp in logp_grid:
+            
+            try:
+                density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+                pressure_grid.append(lp)
+            except RuntimeError:
+                continue
+        
+        pl.plot(density_grid, pressure_grid, label=eos_name)
+
     pl.xlim([10**17, 10**19])
+    pl.xlabel("Density")
+    pl.ylabel("Log Pressure")
+    pl.title("Pressure vs Density")
+    pl.legend()
     pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
 
 def snr_radius_error(m_sigmas, r_sigmas, N, sigmas):
