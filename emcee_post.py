@@ -87,6 +87,7 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius (km)')
+    pl.scatter(masses,radii,s=1,color="black")
     #ax.set_title("Visualization of Mock NICER Data")
 
     # APR4_EPP
@@ -94,10 +95,11 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
 
     log_p1_SI, g1, g2, g3, _ = global_max(MCMC_distribution_file)
     max_parameters = [log_p1_SI, g1, g2, g3]
-    names = ["True EoS", "Max Likelihood"]
+    names = ["APR4_EPP", "Max Likelihood"]
 
     x = 0
-    combos = [true_parameters, max_parameters]
+    #combos = [true_parameters, max_parameters]
+    combos = [true_parameters]
     for combo in combos:
 
         log_p1_SI, g1, g2, g3 = combo
@@ -120,7 +122,7 @@ def plot_m_eos_val_on_kde(MCMC_distribution_file, label, N=1000):
                 continue
             except IndexError:
                 continue
-        pl.plot(working_masses,working_radii,label=names[x])
+        pl.plot(working_masses,working_radii,label=names[x],color="red")
         x += 1
 
     pl.legend()

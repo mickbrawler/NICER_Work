@@ -110,7 +110,7 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     pl.clf()
     data = np.loadtxt(datafile)
     m = data[:,0] 
-    r = data[:,1]
+    r = data[:,1] / 1000
 
 #    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
 #    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
@@ -132,7 +132,7 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
 
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
-    ax.set_ylabel('Radius')
+    ax.set_ylabel('Radius (km)')
     pl.scatter(m,r,s=1,color="black")
     pl.title("Mass-Radius Distribution")
 
@@ -509,6 +509,6 @@ def eos_mr_pd_curves(eos_name, N=1000):
     pl.plot(density_grid, logp_grid)
     pl.xlim([10**17, 10**19])
     pl.xlabel("Density")
-    pl.ylabel("Pressure")
+    pl.ylabel("Log Pressure")
     pl.title("Pressure vs Density Curve")
     pl.savefig("emcee_files/plots/{}_PD_Curve.png".format(eos_name), bbox_inches='tight')
