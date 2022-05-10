@@ -270,7 +270,7 @@ def p_vs_rho_plot_multiple(filename, label, N):
     size = 1
     pl.plot(lower_bound, logp_grid, color="blue")
     pl.plot(upper_bound, logp_grid, color="blue")
-    ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
+    ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.25)
     pl.plot(median, logp_grid, "k--")
 
     min_log_pressure = 32.0
@@ -293,7 +293,7 @@ def p_vs_rho_plot_multiple(filename, label, N):
             except RuntimeError:
                 continue
         
-        pl.plot(density_grid, pressure_grid, label=eos_name)
+        pl.plot(density_grid, pressure_grid, label=eos_name, linewidth=2.0)
 
     pl.xlim([10**17, 10**19])
     pl.xlabel("Density")
