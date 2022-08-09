@@ -42,7 +42,8 @@ def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
             continue
 
     output = np.vstack((working_masses,working_radii)).T
-    outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
+    ###outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
+    outputfile = "studies/p_vs_rho_discrepancy/mass_radii_{}.txt".format(label)
     np.savetxt(outputfile, output, fmt="%f\t%f")
 
 def varying_std_posterior(m_sigmas, r_sigmas, eos_name, N):
@@ -81,7 +82,8 @@ def plot_radii_scatter(datafile, label):
         pl.clf()
         data = np.loadtxt(datafile)
         masses = data[:,0]
-        radii = data[:,1]
+        ###radii = data[:,1]
+        radii = data[:,1] / 1000
 
         pl.rcParams.update({"font.size":18})
         pl.figure(figsize=(20,10))
@@ -89,7 +91,8 @@ def plot_radii_scatter(datafile, label):
         pl.xlabel("Mass")
         pl.ylabel("Radius")
         pl.title("Radii vs Masses")
-        pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
+        ###pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
+        pl.savefig("studies/p_vs_rho_discrepancy/scatter_{}.png".format(label)) # label="APR4_EPP_N????"
 
 def multiple_radii_scatter(eos_name, N, m_sigmas, r_sigmas):
     # Function plots multiple eos' radii files
