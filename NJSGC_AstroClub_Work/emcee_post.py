@@ -226,7 +226,8 @@ def p_vs_rho(filename, label, N):
 
     logp_grid = logp_grid[~np.isin(logp_grid,trouble_p_vals)]
     rho_vals = [logp_grid, lower_bound, median, upper_bound]
-    outputfile = "emcee_files/runs/p_vs_rho_{}.txt".format(label)
+    ###outputfile = "emcee_files/runs/p_vs_rho_{}.txt".format(label)
+    outputfile = "studies/p_vs_rho_discrepancy/txt_files/piecewise_p_vs_rho_{}.txt".format(label)
     np.savetxt(outputfile, rho_vals)
 
 def p_vs_rho_plot(filename, label, N):
@@ -258,7 +259,8 @@ def p_vs_rho_plot(filename, label, N):
     pl.ylabel("Log Pressure")
     pl.title("Pressure vs Density")
     pl.legend()
-    pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
+    ###pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
+    pl.savefig("studies/p_vs_rho_discrepancy/png_files/piecewise_p_vs_rho_{}.png".format(label), bbox_inches='tight')
 
 def p_vs_rho_plot_multiple(filename, label, N):
 

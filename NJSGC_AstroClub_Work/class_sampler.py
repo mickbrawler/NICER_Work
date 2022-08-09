@@ -80,9 +80,10 @@ class sampler:
         p0 = self.n_walker_points(nwalkers)
 
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_posterior)
-        sampler.run_mcmc(p0, sample_size)
+        sampler.run_mcmc(p0, sample_size,progress=True)
         flat_samples = sampler.get_chain(discard=100, thin=15, flat=True)
-        outputfile = "emcee_files/runs/{}.txt".format(label)
+        ###outputfile = "emcee_files/runs/{}.txt".format(label)
+        outputfile = "studies/p_vs_rho_discrepancy/piecewise_samples_{}.txt".format(label)
         np.savetxt(outputfile, flat_samples)
 
     def monitor(self, directory, dir_length):
