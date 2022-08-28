@@ -35,7 +35,7 @@ class sampler:
         # Saves all p vs rho data, and the p vs rho interpolant dictionary as jsons
         # samples_file  ::  File holding samples from run on m-r or lambda_tilda-q distribution
 
-        parametric_samples = np.loadtxt(samples_file)
+        parametric_samples = np.loadtxt(samples_file).tolist()
 
         p_densities = {}
         self.p_usables = {}
