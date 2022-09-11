@@ -7,7 +7,7 @@ import random
 from scipy import interpolate
 import json
 
-class sampler:
+class p_rho_EoS:
 
     def __init__(self, label="test", spectral=True, N=1000):
         # Setting up reused variables as attributes
@@ -58,10 +58,10 @@ class sampler:
             troublesome_psamples.update({lp:troublesome_samples})
             p_densities.update({lp:density_grid})
 
-        with open("p_rho_sampler_files/data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+        with open("p_rho_sampler_files/data/json_files/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
             json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
-        with open("p_rho_sampler_files/data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
+        with open("p_rho_sampler_files/data/json_files/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
     def get_usables(self, p_dens_file):
@@ -79,7 +79,7 @@ class sampler:
             s = interpolate.interp1d(bin_centers, bins)
             self.p_usables.update({lp:[min(bin_centers),max(bin_centers),s]}) # Get min/max of bin_centers instead of density_grid because of interpolation error
      
-    def sampler(self, checkpoint=None, samples=5000):
+    def run_sampler(self, checkpoint=None, samples=5000):
         # Samples p-rho space to get p-rho distribution
         # checkpoint    ::  If set to path of previous samples file, sampler will continue where that run left off
         # samples       ::  Number of samples used
@@ -114,7 +114,7 @@ class sampler:
             post_rho.append(rho_choice1)
 
         data = {"p": post_p, "rho": post_rho, "l": post_l}
-        with open("p_rho_sampler_files/data/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
+        with open("p_rho_sampler_files/data/json_files/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
     def likelihood(self, p):

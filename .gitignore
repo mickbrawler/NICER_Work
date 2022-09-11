@@ -10,7 +10,7 @@ NJSGC_AstroClub_Work/emcee_files/error/
 NJSGC_AstroClub_Work/emcee_files/first_try/
 NJSGC_AstroClub_Work/emcee_files/used_runs/
 NJSGC_AstroClub_Work/__pycache__/
-GWXtreme_merger/before_p_rho_sampler/1000trim/
-GWXtreme_merger/before_p_rho_sampler/30000trim/txt_files/
+GWXtreme_merger/parametric_sampler_files/1000trim/
+GWXtreme_merger/parametric_sampler_files/30000trim/txt_files/
 GWXtreme_merger/__pycache__/
 GWXtreme_merger/p_rho_sampler_files/data/
