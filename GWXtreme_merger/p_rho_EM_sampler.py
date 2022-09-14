@@ -55,13 +55,13 @@ class p_rho_EoS:
                     troublesome_samples.append(sample)
                     continue # ran into runtime error at some point due to energydensityofpressure function
 
-            troublesome_psamples.update({lp:troublesome_samples})
-            p_densities.update({lp:density_grid})
+            troublesome_psamples[lp] = troublesome_samples
+            p_densities[lp] = density_grid
 
-        with open("p_rho_sampler_files/data/json_files/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+        with open("p_rho_sampler_files/data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
             json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
-        with open("p_rho_sampler_files/data/json_files/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
+        with open("p_rho_sampler_files/data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
     def get_usables(self, p_dens_file):
@@ -77,7 +77,7 @@ class p_rho_EoS:
             bins, bin_bounds = np.histogram(p_densities[str(lp)], bins=100, density=True)
             bin_centers = (bin_bounds[1:] + bin_bounds[:-1]) / 2
             s = interpolate.interp1d(bin_centers, bins)
-            self.p_usables.update({lp:[min(bin_centers),max(bin_centers),s]}) # Get min/max of bin_centers instead of density_grid because of interpolation error
+            self.p_usables[lp] = [min(bin_centers),max(bin_centers),s] # Get min/max of bin_centers instead of density_grid because of interpolation error
      
     def run_sampler(self, checkpoint=None, samples=5000):
         # Samples p-rho space to get p-rho distribution
@@ -88,15 +88,15 @@ class p_rho_EoS:
         if checkpoint == None: 
             post_p, post_rho, post_l = [], [], []
             p_choice1 = random.uniform(self.min_log_pressure, self.max_log_pressure)
+            L1, rho_choice1 = self.likelihood(p_choice1)
 
         else: 
             with open(checkpoint,"r") as f: 
                 data = json.load(f)
             
             post_p, post_rho, post_l = data["p"], data["rho"], data["l"]
-            p_choice1 = post_p[-1]
-
-        L1, rho_choice1 = self.likelihood(p_choice1)
+            p_choice1, rho_choice1, L1 = post_p[-1], post_rho[-1], post_L[-1]
+            post_p, post_rho, post_l = data["p"][:-1], data["rho"][:-1], data["l"][:-1]
 
         while len(post_p) <= (samples - 1):
 
@@ -114,7 +114,7 @@ class p_rho_EoS:
             post_rho.append(rho_choice1)
 
         data = {"p": post_p, "rho": post_rho, "l": post_l}
-        with open("p_rho_sampler_files/data/json_files/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
+        with open("p_rho_sampler_files/data/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
     def likelihood(self, p):
@@ -124,8 +124,8 @@ class p_rho_EoS:
 
         # 2-Nearest-Neighbor
         # The method by which be get the closest neighbors needs more work.
-        p1 = self.logp_grid[np.sum(self.logp_grid < p) - 1]
-        p2 = self.logp_grid[-np.sum(self.logp_grid > p)]
+        p1 = self.logp_grid[self.logp_grid <= p][-1]
+        p2 = self.logp_grid[self.logp_grid >= p][0]
         min_density_p1, max_density_p1, s_1 = self.p_usables[p1]
         min_density_p2, max_density_p2, s_2 = self.p_usables[p2]
         
@@ -137,7 +137,9 @@ class p_rho_EoS:
         d2 = abs(p - p2)
         s1 = s_1(rho)
         s2 = s_2(rho)
-        L = ((s1 * d2) + (s2 * d1)) / (d1 + d2)
+
+        if (s1 == s2) and d1 == 0 and d2 == 0: L = s1
+        else: L = ((s1 * d2) + (s2 * d1)) / (d1 + d2)
 
         return L, rho
 
