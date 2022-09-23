@@ -14,9 +14,17 @@ import random
 class parametric_EoS:
 
     def __init__(self, mr_file, N=1000, spectral=True):
-        # Constructor that sets up prior bounds for selected parametric model
-        # and sets up interpolent/kernel thats used to calculate each sample's
-        # likelihood.
+        '''
+        Constructor that sets up prior bounds for selected parametric model
+        and sets up interpolent/kernel thats used to calculate each sample's
+        likelihood. The m-r txt file's format needs to be in the following
+        format:
+
+        #mass       radius
+        ...         ...
+        ...         ...
+        max_mass    ...
+        '''
 
         if spectral: self.priorbounds = {'gamma1':{'params':{"min":0.2,"max":2.00}},'gamma2':{'params':{"min":-1.6,"max":1.7}},'gamma3':{'params':{"min":-0.6,"max":0.6}},'gamma4':{'params':{"min":-0.02,"max":0.02}}}
         else: self.priorbounds = {'logP':{'params':{"min":32.6,"max":33.5}},'gamma1':{'params':{"min":2.0,"max":4.5}},'gamma2':{'params':{"min":1.1,"max":4.5}},'gamma3':{'params':{"min":1.1,"max":4.5}}}
@@ -28,7 +36,11 @@ class parametric_EoS:
         self.N = N
 
     def log_prior(self, parameters):
-        # Tests if sample is physical. Returns 0 if physical, and - inf if not.
+        '''
+        Checks if sample is physical. Returns 0 if physical, and - inf if not.
+
+        parameters  :: Sample's parameters in the form [g1,g2,g3,g4] for example
+        '''
 
         g1_p1, g2_g1, g3_g2, g4_g3 = parameters
 
@@ -39,7 +51,9 @@ class parametric_EoS:
         else: return - np.inf
 
     def log_likelihood(self, parameters):
-        # Finds 1D integral of eos curve over the kde of a mass-radius posterior sample.
+        '''
+        Finds 1D integral of eos curve over the kde of a mass-radius posterior sample.
+        '''
 
         g1_p1, g2_g1, g3_g2, g4_g3 = parameters
 
@@ -75,12 +89,16 @@ class parametric_EoS:
         else: return - np.inf
 
     def log_posterior(self, parameters):
-        # Adds likelihood and prior results.
+        '''
+        Adds likelihood and prior results.
+        '''
 
         return self.log_likelihood(parameters) + self.log_prior(parameters)
 
     def n_walker_points(self, walkers):
-    # Gets a random starting sample for each walker.
+        '''
+        Gets a random starting sample for each walker.
+        '''
 
         bounds = list(self.priorbounds.values())
         points = []
@@ -97,7 +115,14 @@ class parametric_EoS:
         return np.array(points)
 
     def run_mcmc(self, label="", sample_size=5000, nwalkers=10, npool=10):
-        # Samples in parametric space.
+        '''
+        Samples in parametric space.
+
+        label           :: End of filenames produced to distinguish runs
+        sample_size     :: Amount of samples each walker goes through
+        nwalkers        :: Amount of walkers independently working
+        npool           :: Amount of cores to use
+        '''
 
         ndim = 4
         p0 = self.n_walker_points(nwalkers)
@@ -125,10 +150,13 @@ class parametric_EoS:
 class p_rho_EoS:
 
     def __init__(self, label="", spectral=True, N=1000):
-        # Setting up reused variables as attributes.
-        # label     ::  End of name for files produced to distinguish runs
-        # spectral  ::  Which parametric model is used
-        # N         ::  Length of log pressure grid
+        '''
+        Setting up reused variables as attributes.
+
+        label     ::  End of name for files produced to distinguish runs
+        spectral  ::  Which parametric model is used
+        N         ::  Length of log pressure grid
+        '''
 
         self.label = label
         self.spectral = spectral
@@ -147,8 +175,15 @@ class p_rho_EoS:
             self.max_log_pressure = max(self.logp_grid[:-1])
 
     def p_rho_grid(self, samples_file):
-        # Saves all p vs rho data, and the p vs rho interpolant dictionary as jsons.
-        # samples_file  ::  File holding samples from run on m-r or lambda_tilda-q distribution
+        '''
+        Uses samples file from run on m-r or lambda_tilda-q distribution to 
+        compute p vs rho data. Saves the data as a json. The samples file 
+        needs to have the following format:
+
+        #g1     g2      g3      g4
+        ...     ...     ...     ...
+        ...     ...     ...     ...
+        '''
 
         parametric_samples = np.loadtxt(samples_file).tolist()
 
@@ -180,9 +215,13 @@ class p_rho_EoS:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
     def likelihood(self, p):
-        # Likelihood is weighted by distance of the two grid pressures closest to
-        # the p value. It uses these grid pressure's density interpolants to 
-        # get a random density's prominence.
+        '''
+        Likelihood is weighted by distance of the two grid pressures closest to
+        the p value. It uses these grid pressure's density interpolants to get 
+        a random density's prominence.
+        
+        p   ::  Random pressure value within bounds of logp_grid
+        '''
 
         # 2-Nearest-Neighbor
         # The method by which be get the closest neighbors needs more work.
@@ -206,9 +245,15 @@ class p_rho_EoS:
         return L, rho
 
     def get_usables(self, p_dens_file):
-        # Uses pressure-density computation result file to produce density min/max/interpolant dictionary.
-        # p_dens_files  ::  File holding pressure-density values
-        
+        '''
+        Uses pressure-density computation result file to produce density 
+        min/max/interpolant dictionary. The file should be in the following
+        format:
+
+        {"p1":[d1,d2,d3,...],
+         "p2":[d1,d2,d3,...], ...}
+        '''
+
         with open(p_dens_file,"r") as f:
             p_densities = json.load(f)
 
@@ -221,9 +266,12 @@ class p_rho_EoS:
             self.p_usables[lp] = [min(bin_centers),max(bin_centers),s] # Get min/max of bin_centers instead of density_grid because of interpolation error
      
     def run_sampler(self, checkpoint=None, samples=5000):
-        # Samples p-rho space to get p-rho distribution
-        # checkpoint    ::  If set to path of previous samples file, sampler will continue where that run left off
-        # samples       ::  Number of samples used
+        '''
+        Samples p-rho space to get p-rho distribution.
+
+        checkpoint    ::  If set to path of previous samples file, sampler will continue where that run left off
+        samples       ::  Number of samples used
+        '''
 
         # METROPOLIS-HASTINGS
         if checkpoint == None: 
@@ -258,11 +306,13 @@ class p_rho_EoS:
         with open("p_rho_sampler_files/data/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
-    def confidence_interval(self, p_densities_file, plot=True):
-        # Saves logp_grid, lower_bound, median, upper_bound of parametric
-        # distribution. Can plot them as well.
+    def confidence_interval(self, p_dens_file, plot=True):
+        '''
+        Saves logp_grid, lower_bound, median, upper_bound of parametric
+        distribution. Can plot them as well.
+        '''
 
-        with open(p_densities, "r") as f:
+        with open(p_dens_file, "r") as f:
             data = json.load(f)
 
         density_matrix = list(data.values())
