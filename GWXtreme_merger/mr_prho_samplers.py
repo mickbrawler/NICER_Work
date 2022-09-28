@@ -208,10 +208,10 @@ class p_rho_EoS:
             troublesome_psamples[lp] = troublesome_samples
             p_densities[lp] = density_grid
 
-        with open("p_rho_sampler_files/data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+        with open("data/p_rho_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
             json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
-        with open("p_rho_sampler_files/data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
+        with open("data/p_rho_data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
     def likelihood(self, p):
@@ -303,7 +303,7 @@ class p_rho_EoS:
             post_rho.append(rho_choice1)
 
         data = {"p": post_p, "rho": post_rho, "l": post_l}
-        with open("p_rho_sampler_files/data/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
+        with open("data/p_rho_data/{}_p_rho_samples_{}.json".format(self.model, self.label), "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
     def confidence_interval(self, p_dens_file, plot=True):
