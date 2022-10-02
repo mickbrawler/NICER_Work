@@ -10,6 +10,7 @@ import json
 import emcee
 import math
 import random
+import argparse
 
 class parametric_EoS:
 
@@ -165,16 +166,15 @@ class p_rho_EoS:
         if spectral: 
             self.max_log_pressure = 37.06469815599594
             self.model = "spectral"
+            self.logp_grid = np.linspace(self.min_log_pressure, self.max_log_pressure, N+1) # Recently changed spectral p array to still be 1000 values, used to be 999 due to snip off
+            self.logp_grid = self.logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
+            self.max_log_pressure = max(self.logp_grid[:-1])
         else: 
             self.max_log_pressure = 35.400799437198074
             self.model = "piecewise"
+            self.logp_grid = np.linspace(self.min_log_pressure, self.max_log_pressure, N)
 
-        self.logp_grid = np.linspace(self.min_log_pressure, self.max_log_pressure, N)
-        if self.spectral: 
-            self.logp_grid = self.logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
-            self.max_log_pressure = max(self.logp_grid[:-1])
-
-    def p_rho_grid(self, samples_file):
+    def p_rho_grid(self, samples_file, checker=False):
         '''
         Uses samples file from run on m-r or lambda_tilda-q distribution to 
         compute p vs rho data. Saves the data as a json. The samples file 
@@ -183,12 +183,13 @@ class p_rho_EoS:
         #g1     g2      g3      g4
         ...     ...     ...     ...
         ...     ...     ...     ...
+
+        checker : If set to True, samples that caused errors will be saved (rare)
         '''
 
         parametric_samples = np.loadtxt(samples_file).tolist()
 
         p_densities = {}
-        self.p_usables = {}
         troublesome_psamples = {}
         for lp in self.logp_grid:
 
@@ -208,11 +209,12 @@ class p_rho_EoS:
             troublesome_psamples[lp] = troublesome_samples
             p_densities[lp] = density_grid
 
-        with open("data/p_rho_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
-            json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
-
         with open("data/p_rho_data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
+
+        if checker == True:
+            with open("data/p_rho_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+                json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
     def likelihood(self, p):
         '''
@@ -346,10 +348,10 @@ class p_rho_EoS:
             ax.set_xscale("log")
 
             size = 1
-            pl.plot(lower_bound, logp_grid, color="blue")
-            pl.plot(upper_bound, logp_grid, color="blue")
-            ax.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
-            pl.plot(median, logp_grid, "k--")
+            pl.plot(lower_bound, self.logp_grid, color="blue")
+            pl.plot(upper_bound, self.logp_grid, color="blue")
+            ax.fill_betweenx(self.logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
+            pl.plot(median, self.logp_grid, "k--")
 
             pl.xlim([10**17, 10**19])
             pl.xlabel("Density")
@@ -357,3 +359,47 @@ class p_rho_EoS:
             pl.title("Pressure vs Density")
             pl.savefig("./{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
 
+
+def multiprocess_p_rho_grid(p_index):
+    '''
+    Same as other p_rho_grid function, but designed for multiprocessing to speed
+    up density calculation. Removed error prone sample saving for now though.
+    Less things to combine later. Solely for spectral method.
+
+    p_index     : Index of pressures to find densities of.
+    '''
+    
+    samples_file = "data/mr_parametric_data/EM_GW_all_samples.txt"
+    parametric_samples = np.loadtxt(samples_file).tolist()
+
+    N = 1000
+    min_log_pressure = 32.0
+    max_log_pressure = 37.06469815599594
+    logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
+    logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
+    logp_grid = logp_grid.reshape([100,10])
+
+    p_densities = {}
+    for lp in logp_grid[p_index]:
+
+        density_grid = []
+        for sample in parametric_samples:
+
+            g1_p1, g2_g1, g3_g2, g4_g3 = sample
+            try:
+                eos = lalsim.SimNeutronStarEOS4ParameterSpectralDecomposition(g1_p1,g2_g1,g3_g2,g4_g3)
+                density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+            except RuntimeError: 
+                continue # ran into runtime error at some point due to energydensityofpressure function
+
+        p_densities[lp] = density_grid
+
+    with open("data/multiprocessing/{}.json".format(p_index), "w") as f:
+        json.dump(p_densities, f, indent=2, sort_keys=True)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("index", help="Picks what pressures to use and label file", type=int)
+    args = parser.parse_args()
+
+    multiprocess_p_rho_grid(args.index)
