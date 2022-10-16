@@ -136,7 +136,7 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius (km)')
-    pl.scatter(m,r,s=1,color="black")
+    #pl.scatter(m,r,s=1,color="black")
     pl.title("Mass-Radius Distribution")
 
     if save: pl.savefig("{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
