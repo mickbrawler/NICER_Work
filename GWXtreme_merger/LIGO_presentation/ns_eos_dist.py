@@ -107,7 +107,7 @@ def multiple_radii_scatter(eos_name, N, m_sigmas, r_sigmas):
         plot_radii_scatter(File, "{}_N{}_m{}_r{}".format(eos_name,N,m_sigmas[count],r_sigmas[count]))
         count += 1
 
-def plot_radii_gaussian_kde(datafile, label, save=True):
+def plot_radii_gaussian_kde(datafile, label, EoS=False):
     # Plot the kde of the eos' radii distribution
 
     pl.clf()
@@ -136,10 +136,13 @@ def plot_radii_gaussian_kde(datafile, label, save=True):
     ax.pcolormesh(mm, rr, f)
     ax.set_xlabel('Mass')
     ax.set_ylabel('Radius (km)')
-    #pl.scatter(m,r,s=1,color="black")
-    pl.title("Mass-Radius Distribution")
-
-    if save: pl.savefig("{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
+    pl.scatter(m,r,s=1,color="black")
+    if type(EoS) == str:
+        mass, radii = np.loadtxt(EoS).T
+        radii = radii / 1000
+        pl.plot(mass, radii, color="red")
+    pl.title("Mock Radius-Mass Distribution")
+    pl.savefig("{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
 def plot_radii_heat(datafile, bins, label, save=True):
     # Function to plot eos' radii as heatmap
