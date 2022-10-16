@@ -134,25 +134,25 @@ def plot_parameter_distribution(filename, label):
 
     data = np.loadtxt(filename)
 
-    APR4_EPP_p1 = 33.275399244401434
-    APR4_EPP_g1 = 2.881652000854998
-    APR4_EPP_g2 = 3.380399843127479
-    APR4_EPP_g3 = 3.2762125079818984
+    APR4_EPP_g1 = .6483014736029169
+    APR4_EPP_g2 = .22549530718867078
+    APR4_EPP_g3 = -.020071115984931484
+    APR4_EPP_g4 = -.0003498568113544248
 
     sns.set()
     fig, axes = pl.subplots(2,2,figsize=(7,7))
 
-    sns.kdeplot(data[:,0],ax=axes[0,0]).set_title("Pressure")
-    axes[0,0].axvline(APR4_EPP_p1)
-    sns.kdeplot(data[:,1],ax=axes[0,1]).set_title("Gamma 1")
-    axes[0,1].axvline(APR4_EPP_g1)
-    sns.kdeplot(data[:,2],ax=axes[1,0]).set_title("Gamma 2")
-    axes[1,0].axvline(APR4_EPP_g2)
-    sns.kdeplot(data[:,3],ax=axes[1,1]).set_title("Gamma 3")
-    axes[1,1].axvline(APR4_EPP_g3)
+    sns.kdeplot(data[:,0],ax=axes[0,0]).set_title("Gamma 1")
+    axes[0,0].axvline(APR4_EPP_g1)
+    sns.kdeplot(data[:,1],ax=axes[0,1]).set_title("Gamma 2")
+    axes[0,1].axvline(APR4_EPP_g2)
+    sns.kdeplot(data[:,2],ax=axes[1,0]).set_title("Gamma 3")
+    axes[1,0].axvline(APR4_EPP_g3)
+    sns.kdeplot(data[:,3],ax=axes[1,1]).set_title("Gamma 4")
+    axes[1,1].axvline(APR4_EPP_g4)
 
     pl.tight_layout()
-    pl.savefig("emcee_files/plots/dist_kde_{}.png".format(label))
+    pl.savefig("plots/dist_kde_{}.png".format(label))
 
 def max_p_vals(filename, label):
     # Study to see if there is a variance in the max p val across all samples
@@ -230,7 +230,7 @@ def p_vs_rho(filename, label, N):
     outputfile = "studies/p_vs_rho_discrepancy/txt_files/piecewise_p_vs_rho_{}.txt".format(label)
     np.savetxt(outputfile, rho_vals)
 
-def p_vs_rho_plot(filename, label, N):
+def p_vs_rho_plot(filename, label, N=1000):
 
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(filename)
 
@@ -257,10 +257,10 @@ def p_vs_rho_plot(filename, label, N):
     pl.xlim([10**17, 10**19])
     pl.xlabel("Density")
     pl.ylabel("Log Pressure")
-    pl.title("Pressure vs Density")
+    pl.title("Density-Pressure 90% Confidence Intervals")
     pl.legend()
     ###pl.savefig("emcee_files/plots/p_vs_rho_{}.png".format(label), bbox_inches='tight')
-    pl.savefig("studies/p_vs_rho_discrepancy/png_files/piecewise_p_vs_rho_{}.png".format(label), bbox_inches='tight')
+    pl.savefig("plots/piecewise_p_vs_rho_{}.png".format(label), bbox_inches='tight')
 
 def p_vs_rho_plot_multiple(filename, label, N):
 

@@ -43,7 +43,7 @@ def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
 
     output = np.vstack((working_masses,working_radii)).T
     ###outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
-    outputfile = "mass_radii_{}.txt".format(label)
+    outputfile = "new_data/mass_radii_{}.txt".format(label)
     np.savetxt(outputfile, output, fmt="%f\t%f")
 
 def varying_std_posterior(m_sigmas, r_sigmas, eos_name, N):
@@ -142,7 +142,7 @@ def plot_radii_gaussian_kde(datafile, label, EoS=False):
         radii = radii / 1000
         pl.plot(mass, radii, color="red")
     pl.title("Mock Radius-Mass Distribution")
-    pl.savefig("{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
+    pl.savefig("plots/{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
 def plot_radii_heat(datafile, bins, label, save=True):
     # Function to plot eos' radii as heatmap
