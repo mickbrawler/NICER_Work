@@ -350,12 +350,13 @@ class p_rho_EoS:
                         pressure_grid.append(lp)
                     except RuntimeError: continue
 
-                pl.plot(density_grid,pressure_grid)
+                pl.plot(density_grid,pressure_grid,color="red",label=EoS)
 
             pl.xlim([10**17, 10**19])
             pl.xlabel("Density")
             pl.ylabel("Log Pressure")
             pl.title("Pressure vs Density")
+            pl.legend()
             pl.savefig("./{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
 
 def plot_parameter_distribution(filename, label, EoS=False):
