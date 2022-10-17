@@ -1,16 +1,100 @@
 from GWXtreme import eos_prior as ep
 from multiprocessing import cpu_count, Pool
 from scipy import interpolate
+import scipy.stats as st
 import lalsimulation as lalsim
 import lal
 import numpy as np
-import matplotlib.pyplot as pl
-import scipy.stats as st
+import pylab as pl
+import seaborn as sns
+import glob
+import re
 import json
 import emcee
 import math
 import random
 import argparse
+
+def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
+    # Function that produces the possible masses and radii for any equation of state
+
+    eos = lalsim.SimNeutronStarEOSByName(eos_name)
+    fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+    working_masses = []
+    working_radii = []
+    N_count = 0
+    while N_count < N:
+        try:
+            m = np.random.normal(1.4, m_sigma, 1)[0] # mean mass of 1.4, standard deviation of m_sigma
+            if m < 1.0: continue # mass can't be less than 1 solar mass
+            radius = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam) # actual radius for m given eos
+            rr = np.random.normal(radius, r_sigma, 1)[0] # tampered radius to simulate weak signal
+            working_masses.append(m)
+            working_radii.append(rr)
+            N_count += 1
+        except RuntimeError: # ??? Error may have resulted from radius calculation (bad m)
+            continue
+
+    output = np.vstack((working_masses,working_radii)).T
+    ###outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
+    outputfile = "new_data/mass_radii_{}.txt".format(label)
+    np.savetxt(outputfile, output, fmt="%f\t%f")
+
+def plot_radii_scatter(datafile, label):
+    # Function to plot scatter of eos' radii
+
+        pl.clf()
+        data = np.loadtxt(datafile)
+        masses = data[:,0]
+        ###radii = data[:,1]
+        radii = data[:,1] / 1000
+
+        pl.rcParams.update({"font.size":18})
+        pl.figure(figsize=(20,10))
+        pl.scatter(masses,radii,s=5)
+        pl.xlabel("Mass")
+        pl.ylabel("Radius")
+        pl.title("Radii vs Masses")
+        ###pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
+        pl.savefig("plots/scatter_{}.png".format(label)) # label="APR4_EPP_N????"
+
+def plot_radii_gaussian_kde(datafile, label, EoS=False):
+    # Plot the kde of the eos' radii distribution
+
+    pl.clf()
+    data = np.loadtxt(datafile)
+    m = data[:,0] 
+    r = data[:,1] / 1000
+
+#    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
+#    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
+
+    m_min, m_max = min(m), max(m) # 1.001069, 2.157369
+    r_min, r_max = min(r), max(r) # 9242.634454, 13119.70321
+
+    # Perform the kernel density estimate
+    mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
+    positions = np.vstack([mm.ravel(), rr.ravel()])
+    pairs = np.vstack([m, r])
+    kernel = st.gaussian_kde(pairs)
+    f = np.reshape(kernel(positions).T, mm.shape)
+
+    fig = pl.figure()
+    ax = fig.gca()
+    ax.set_xlim(m_min, m_max)
+    ax.set_ylim(r_min, r_max)
+
+    ax.pcolormesh(mm, rr, f)
+    ax.set_xlabel('Mass')
+    ax.set_ylabel('Radius (km)')
+    pl.scatter(m,r,s=1,color="black")
+    if type(EoS) == str:
+        mass, radii = np.loadtxt(EoS).T
+        radii = radii / 1000
+        pl.plot(mass, radii, color="red")
+    pl.title("Mock Radius-Mass Distribution")
+    pl.savefig("plots/{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
 class parametric_EoS:
 
@@ -20,7 +104,6 @@ class parametric_EoS:
         and sets up interpolent/kernel thats used to calculate each sample's
         likelihood. The m-r txt file's format needs to be in the following
         format:
-
         #mass       radius
         ...         ...
         ...         ...
@@ -39,7 +122,6 @@ class parametric_EoS:
     def log_prior(self, parameters):
         '''
         Checks if sample is physical. Returns 0 if physical, and - inf if not.
-
         parameters  :: Sample's parameters in the form [g1,g2,g3,g4] for example
         '''
 
@@ -118,7 +200,6 @@ class parametric_EoS:
     def run_mcmc(self, label="", sample_size=5000, nwalkers=10, npool=10):
         '''
         Samples in parametric space.
-
         label           :: End of filenames produced to distinguish runs
         sample_size     :: Amount of samples each walker goes through
         nwalkers        :: Amount of walkers independently working
@@ -147,13 +228,11 @@ class parametric_EoS:
         outputfile = "./{}_samples_{}.txt".format(model,label)
         np.savetxt(outputfile, flat_samples)
 
-
 class p_rho_EoS:
 
     def __init__(self, label="", spectral=True, N=1000):
         '''
         Setting up reused variables as attributes.
-
         label     ::  End of name for files produced to distinguish runs
         spectral  ::  Which parametric model is used
         N         ::  Length of log pressure grid
@@ -179,11 +258,9 @@ class p_rho_EoS:
         Uses samples file from run on m-r or lambda_tilda-q distribution to 
         compute p vs rho data. Saves the data as a json. The samples file 
         needs to have the following format:
-
         #g1     g2      g3      g4
         ...     ...     ...     ...
         ...     ...     ...     ...
-
         checker : If set to True, samples that caused errors will be saved (rare)
         '''
 
@@ -215,4 +292,81 @@ class p_rho_EoS:
         if checker == True:
             with open("./{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
                 json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
+
+    def confidence_interval(self, p_dens_file, plot=True):
+        '''
+        Saves logp_grid, lower_bound, median, upper_bound of parametric
+        distribution. Can plot them as well.
+        '''
+
+        with open(p_dens_file, "r") as f:
+            data = json.load(f)
+
+        density_matrix = list(data.values())
+
+        lower_bound = []
+        median = []
+        upper_bound = []
+        counter = 0
+        for p_rhos in density_matrix:
+
+            bins, bin_bounds = np.histogram(p_rhos,bins=50,density=True)
+            bin_centers = (bin_bounds[1:] + bin_bounds[:-1]) / 2
+            order = np.argsort(-bins)
+            bins_ordered = bins[order]
+            bin_cent_ord = bin_centers[order]
+            include = np.cumsum(bins_ordered) < 0.9 * np.sum(bins)
+            include[np.sum(include)] = True
+            lower_bound.append(min(bin_cent_ord[include]))
+            median.append(np.median(p_rhos))
+            upper_bound.append(max(bin_cent_ord[include]))
+
+        rho_vals = np.array([self.logp_grid, lower_bound, median, upper_bound]).T
+        outputfile = "./{}_p_vs_rho_{}.txt".format(self.model,self.label)
+        np.savetxt(outputfile, rho_vals)
+
+        if plot:
+
+            pl.clf()
+
+            ax = pl.gca()
+            ax.set_xscale("log")
+
+            size = 1
+            pl.plot(lower_bound, self.logp_grid, color="blue")
+            pl.plot(upper_bound, self.logp_grid, color="blue")
+            ax.fill_betweenx(self.logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
+            pl.plot(median, self.logp_grid, "k--")
+
+            pl.xlim([10**17, 10**19])
+            pl.xlabel("Density")
+            pl.ylabel("Log Pressure")
+            pl.title("Pressure vs Density")
+            pl.savefig("./{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
+
+def plot_parameter_distribution(filename, label, EoS=False):
+    # Plots distributions of "detailed" parameter distributions
+
+    data = np.loadtxt(filename)
+
+    sns.set()
+    fig, axes = pl.subplots(2,2,figsize=(7,7))
+
+    sns.kdeplot(data[:,0],ax=axes[0,0]).set_title("Gamma 1")
+    sns.kdeplot(data[:,1],ax=axes[0,1]).set_title("Gamma 2")
+    sns.kdeplot(data[:,2],ax=axes[1,0]).set_title("Gamma 3")
+    sns.kdeplot(data[:,3],ax=axes[1,1]).set_title("Gamma 4")
+
+    if EoS:
+        APR4_EPP_g1 = .6483014736029169
+        APR4_EPP_g2 = .22549530718867078
+        APR4_EPP_g3 = -.020071115984931484
+        APR4_EPP_g4 = -.0003498568113544248
+        axes[0,0].axvline(APR4_EPP_g1)
+        axes[0,1].axvline(APR4_EPP_g2)
+        axes[1,0].axvline(APR4_EPP_g3)
+        axes[1,1].axvline(APR4_EPP_g4)
+
+    pl.tight_layout()
+    pl.savefig("plots/dist_kde_{}.png".format(label))
 
