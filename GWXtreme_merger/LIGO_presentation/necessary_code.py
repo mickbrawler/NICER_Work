@@ -350,7 +350,7 @@ class p_rho_EoS:
                         pressure_grid.append(lp)
                     except RuntimeError: continue
 
-                pl.plot(pressure_grid, density_grid)
+                pl.plot(density_grid,pressure_grid)
 
             pl.xlim([10**17, 10**19])
             pl.xlabel("Density")
