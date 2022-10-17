@@ -293,7 +293,7 @@ class p_rho_EoS:
             with open("./{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
                 json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
-    def confidence_interval(self, p_dens_file, plot=True):
+    def confidence_interval(self, p_dens_file, plot=True, EoS=False):
         '''
         Saves logp_grid, lower_bound, median, upper_bound of parametric
         distribution. Can plot them as well.
@@ -337,6 +337,20 @@ class p_rho_EoS:
             pl.plot(upper_bound, self.logp_grid, color="blue")
             ax.fill_betweenx(self.logp_grid, lower_bound, x2=upper_bound, color="blue", alpha=0.5)
             pl.plot(median, self.logp_grid, "k--")
+
+            if type(EoS) == str:
+
+                pressure_grid = []
+                density_grid = []
+                for lp in self.logp_grid:
+
+                    eos = lalsim.SimNeutronStarEOSByName(EoS)
+                    try: 
+                        density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+                        pressure_grid.append(lp)
+                    except RuntimeError: continue
+
+                pl.plot(pressure_grid, density_grid)
 
             pl.xlim([10**17, 10**19])
             pl.xlabel("Density")
