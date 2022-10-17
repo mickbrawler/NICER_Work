@@ -209,10 +209,10 @@ class p_rho_EoS:
             troublesome_psamples[lp] = troublesome_samples
             p_densities[lp] = density_grid
 
-        with open("new_data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
+        with open("./{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
         if checker == True:
-            with open("new_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+            with open("./{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
                 json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
