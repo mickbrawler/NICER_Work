@@ -378,10 +378,10 @@ def plot_parameter_distribution(filename, label, EoS=False):
         APR4_EPP_g2 = .22549530718867078
         APR4_EPP_g3 = -.020071115984931484
         APR4_EPP_g4 = -.0003498568113544248
-        axes[0,0].axvline(APR4_EPP_g1)
-        axes[0,1].axvline(APR4_EPP_g2)
-        axes[1,0].axvline(APR4_EPP_g3)
-        axes[1,1].axvline(APR4_EPP_g4)
+        axes[0,0].axvline(APR4_EPP_g1, color="r")
+        axes[0,1].axvline(APR4_EPP_g2, color="r")
+        axes[1,0].axvline(APR4_EPP_g3, color="r")
+        axes[1,1].axvline(APR4_EPP_g4, color="r")
 
     pl.tight_layout()
     pl.savefig("plots/dist_kde_{}.png".format(label))
