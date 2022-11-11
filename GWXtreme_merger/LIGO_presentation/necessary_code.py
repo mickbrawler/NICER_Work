@@ -59,7 +59,7 @@ def plot_radii_scatter(datafile, label):
         ###pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
         pl.savefig("plots/scatter_{}.png".format(label)) # label="APR4_EPP_N????"
 
-def plot_radii_gaussian_kde(datafile, label, EoS=False):
+def plot_radii_gaussian_kde(datafile, label, title, EoS=False):
     # Plot the kde of the eos' radii distribution
 
     pl.clf()
@@ -93,7 +93,8 @@ def plot_radii_gaussian_kde(datafile, label, EoS=False):
         mass, radii = np.loadtxt(EoS).T
         radii = radii / 1000
         pl.plot(mass, radii, color="red")
-    pl.title("Mock Radius-Mass Distribution")
+    pl.title(title)
+    pl.colorbar()
     pl.savefig("plots/{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
 
 class parametric_EoS:
