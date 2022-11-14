@@ -16,7 +16,7 @@ import random
 import argparse
 
 def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
-    # Function that produces the possible masses and radii for any equation of state
+    # Produces the possible masses and radii for any equation of state
 
     eos = lalsim.SimNeutronStarEOSByName(eos_name)
     fam = lalsim.CreateSimNeutronStarFamily(eos)
@@ -37,12 +37,11 @@ def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
             continue
 
     output = np.vstack((working_masses,working_radii)).T
-    ###outputfile = "NICER_mock_data/mass_radii_posterior/mass_radii_{}.txt".format(label) # label="APR4_EPP_N????"
     outputfile = "new_data/mass_radii_{}.txt".format(label)
     np.savetxt(outputfile, output, fmt="%f\t%f")
 
 def plot_radii_scatter(datafile, label):
-    # Function to plot scatter of eos' radii
+    # Plots scatter of eos' radii
 
         pl.clf()
         data = np.loadtxt(datafile)
@@ -56,8 +55,7 @@ def plot_radii_scatter(datafile, label):
         pl.xlabel("Mass")
         pl.ylabel("Radius")
         pl.title("Radii vs Masses")
-        ###pl.savefig("NICER_mock_data/radii_plots/{}.png".format(label)) # label="APR4_EPP_N????"
-        pl.savefig("plots/scatter_{}.png".format(label)) # label="APR4_EPP_N????"
+        pl.savefig("plots/scatter_{}.png".format(label))
 
 def plot_radii_gaussian_kde(datafile, label, title, EoS=False):
     # Plot the kde of the eos' radii distribution
@@ -67,11 +65,8 @@ def plot_radii_gaussian_kde(datafile, label, title, EoS=False):
     m = data[:,0] 
     r = data[:,1] / 1000
 
-#    m_min, m_max = 1, 2.2 # 1.001069, 2.157369
-#    r_min, r_max = 9200, 13200 # 9242.634454, 13119.70321
-
-    m_min, m_max = min(m), max(m) # 1.001069, 2.157369
-    r_min, r_max = min(r), max(r) # 9242.634454, 13119.70321
+    m_min, m_max = min(m), max(m) 
+    r_min, r_max = min(r), max(r)
 
     # Perform the kernel density estimate
     mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
@@ -95,9 +90,10 @@ def plot_radii_gaussian_kde(datafile, label, title, EoS=False):
         pl.plot(mass, radii, color="red")
     pl.title(title)
     pl.colorbar()
-    pl.savefig("plots/{}.png".format(label), bbox_inches='tight') # label="APR4_EPP_m(m_sigma)_r(r_sigma)_kde_mesh_scatter"
+    pl.savefig("plots/{}.png".format(label), bbox_inches='tight')
 
 class parametric_EoS:
+    # Uses r-m distribution to get [g1,g2,g3,g4] distribution.
 
     def __init__(self, mr_file, N=1000, spectral=True):
         '''
@@ -230,6 +226,7 @@ class parametric_EoS:
         np.savetxt(outputfile, flat_samples)
 
 class p_rho_EoS:
+    # Uses [g1,g2,g3,g4] distribution to get p-rho confidence interval.
 
     def __init__(self, label="", spectral=True, N=1000):
         '''
