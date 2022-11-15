@@ -6,9 +6,16 @@ def random_choice(mr_file, N, outputfile):
     # Randomly chooses N points from mr posterior
 
     km_radii, masses = np.loadtxt(mr_file).T
-    samples = np.array([masses,km_radii*1000]).T
+    samples = np.array([masses,km_radii*1000]).T # rearrange Miller's m-r distribution to be in m, r (meters)
+    
+    random_positions = [np.random.randint(0,len(samples))]
+    while len(random_positions) < N:
+        random = np.random.randint(0,len(samples))
+        appearances = np.sum(random == np.array(random_positions))
+        if appearances == 0:
+            random_positions.append(random)
 
-    shortened_samples = samples[np.random.choice(N,N)]
+    shortened_samples = samples[random_positions]
     np.savetxt(outputfile, shortened_samples)
 
 def thinner(spectral_file, outputfile, burnin=1000):
