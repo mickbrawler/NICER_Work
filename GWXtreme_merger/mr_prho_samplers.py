@@ -372,8 +372,9 @@ def multiprocess_p_rho_grid(p_index):
     samples_file = "LIGO_presentation/new_data/GW_EM_spectral_sampled_samples.json"
     with open(samples_file,"r") as f:
         data = json.load(f)
-
     parametric_samples = data["samples"]
+
+#    parametric_samples = np.loadtxt("LIGO_presentation/borrowed_data/thinned_spectral_samples.txt")
 
     N = 1000
     min_log_pressure = 32.0

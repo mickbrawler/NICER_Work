@@ -20,7 +20,7 @@ class sample_samples:
         self.samples = np.loadtxt(spectral_file)
         self.N = N
 
-    def run_MCMC(self, outputfile):
+    def run_MCMC(self, outputfile, burnin=100):
     # Metropolis algorithm, slightly different
         
         old_sample = self.samples[0]
@@ -38,6 +38,9 @@ class sample_samples:
 
             post_samples.append(list(old_sample))
             post_ls.append(L1)
+
+        post_samples = post_samples[burnin:]
+        post_ls = post_ls[burnin:]
 
         data = {"samples":post_samples,"ls":post_ls}
         with open(outputfile, "w") as f:

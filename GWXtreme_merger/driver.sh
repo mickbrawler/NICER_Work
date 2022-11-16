@@ -11,4 +11,4 @@ done
 
 python monitor.py 100
 
-python combine.py "EM_GW_all_samples"
+python combine.py "19k_EM_samples"
