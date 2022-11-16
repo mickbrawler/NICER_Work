@@ -8,7 +8,7 @@ def plot_intervals(outputfile):
 
     pl.clf()
     
-    Files = ["../data/mr_parametric_data/spectral_p_vs_rho_W10_S100000.txt", "../data/mr_parametric_data/spectral_GW/spectral_p_vs_rho_GW170817.txt", "./new_data/spectral_p_vs_rho_GW_EM_spectral_sampled_confidence.txt"]
+    Files = ["./borrowed_data/spectral_p_vs_rho_W10_S100000.txt", "./new_data/spectral_p_vs_rho_thinned_GW_spectral_confidence.txt", "new_data/spectral_p_vs_rho_GW_EM_spectral_sampled_confidence.txt"]
     labels = ["EM confidence method", "GW confidence method", "merger confidence method"]
     colors = ["blue", "red", "green"]
 
@@ -35,7 +35,7 @@ def corner_plots(outputfile):
 
     pl.clf()
     
-    Files = ["./new_data/thinned_spectral_samples.txt","./borrowed_data/spectral_samples_W10_S100000.txt","./new_data/GW_EM_spectral_sampled_samples.json"]
+    Files = ["./borrowed_data/spectral_samples_W10_S100000.txt","./new_data/thinned_spectral_samples.txt","./new_data/GW_EM_spectral_sampled_samples.json"]
     labels = ["EM source", "GW source", "merger source"] # not sure if we can implement with corner plot...
     colors = ["blue", "red", "green"]
 
