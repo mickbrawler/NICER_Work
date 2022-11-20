@@ -12,7 +12,7 @@ def combine_multiprocessing(label):
         for key in list(piece.keys()):
             p_densities[key] = piece[key]
 
-    filename = "LIGO_presentation/new_data/GW_EM_spectral_sampled_p_rho.json"
+    filename = "LIGO_presentation/new_data/GW_EM_spectral_sampled_p_rho_viacs.json"
 #    filename = "LIGO_presentation/new_data/thinned_GW_spectral_p_rho.json"
     with open(filename, "w") as f:
         json.dump(p_densities, f, indent=2, sort_keys=True)

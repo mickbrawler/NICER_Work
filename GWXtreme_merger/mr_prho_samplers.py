@@ -369,7 +369,7 @@ def multiprocess_p_rho_grid(p_index):
     p_index     : Index of pressures to find densities of.
     '''
     
-    samples_file = "LIGO_presentation/new_data/GW_EM_spectral_sampled_samples.json"
+    samples_file = "LIGO_presentation/new_data/GW_EM_spectral_sampled_samples_viacs.json"
     with open(samples_file,"r") as f:
         data = json.load(f)
     parametric_samples = data["samples"]
