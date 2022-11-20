@@ -9,13 +9,13 @@ import math
 
 class sample_samples:
 
-    def __init__(self, mr_file, spectral_file, N=1000):
-    # Sample through GW-source samples using mr-evidence as likelihood.
+    def __init__(self, mr_mc_file, spectral_file, N=1000):
+    # Sample through GW-source samples using mr-evidence / mc-evidence as likelihood.
         
         self.priorbounds = {'gamma1':{'params':{"min":0.2,"max":2.00}},'gamma2':{'params':{"min":-1.6,"max":1.7}},'gamma3':{'params':{"min":-0.6,"max":0.6}},'gamma4':{'params':{"min":-0.02,"max":0.02}}}
 
-        masses, radii = np.loadtxt(mr_file, unpack=True)
-        pairs = np.vstack([masses,radii])
+        masses, radii_cs = np.loadtxt(mr_mc_file, unpack=True)
+        pairs = np.vstack([masses,radii_cs])
         self.kernel = st.gaussian_kde(pairs)
         self.samples = np.loadtxt(spectral_file)
         self.N = N
@@ -46,8 +46,8 @@ class sample_samples:
         with open(outputfile, "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
-    def likelihood(self, parameters):
-    # Uses m-r 1D integral to weight each sample
+    def likelihood(self, parameters, compactness=True):
+    # Uses m-r or m-c 1D integral to weight each sample
 
         g1, g2, g3, g4 = parameters
         params = {"gamma1":np.array([g1]),"gamma2":np.array([g2]),"gamma3":np.array([g3]),"gamma4":np.array([g4])}
@@ -64,15 +64,20 @@ class sample_samples:
 
             working_masses = []
             working_radii = []
+            working_cs = []
             for m in m_grid:
                 try:
                     r = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                    c = m*lal.MRSUN_SI/r
                     working_masses.append(m)
                     working_radii.append(r)
+                    working_cs.append(c)
                 except RuntimeError:
                     continue
 
-            return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
+            if compactness: return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_cs])))*np.diff(working_masses)[0]))
+
+            else: return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
 
         else: return - np.inf
 
