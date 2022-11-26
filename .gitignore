@@ -10,8 +10,7 @@ NJSGC_AstroClub_Work/emcee_files/error/
 NJSGC_AstroClub_Work/emcee_files/first_try/
 NJSGC_AstroClub_Work/emcee_files/used_runs/
 NJSGC_AstroClub_Work/__pycache__/
-GWXtreme_merger/__pycache__/
-GWXtreme_merger/data/
-GWXtreme_merger/LIGO_presentation/borrowed_data/
-GWXtreme_merger/LIGO_presentation/new_data/
-GWXtreme_merger/LIGO_presentation/__pycache__/
+joint_inference/summer_idea/data/
+joint_inference/summer_idea/__pycache__/
+joint_inference/development/run_data/
+joint_inference/development/__pycache__/
