@@ -23,12 +23,15 @@ def thinner(spectral_file, outputfile, burnin=1000):
 
     f1 = h5py.File(spectral_file,'r+')
     samples = f1['chains']
+    ls = f1['logp']
     thinning = int(max(mc.autocorr.integrated_time(samples))/2.)
 
-    shortened_samples = []
+    shortened_data = []
     for i in range(burnin,len(samples),thinning):
         for j in range(len(samples[0])):
-            shortened_samples.append(samples[i,j,:])
+            g1,g2,g3,g4 = samples[i,j,:]
+            l = ls[i,j]
+            shortened_data.append([g1,g2,g3,g4,l])
 
-    np.savetxt(outputfile, shortened_samples)
+    np.savetxt(outputfile, shortened_data)
 

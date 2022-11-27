@@ -5,103 +5,49 @@ import scipy.stats as st
 import lalsimulation as lalsim
 import lal
 import numpy as np
-import pylab as pl
+import matplotlib.pyplot as pl
 import seaborn as sns
-import glob
-import re
 import json
 import emcee
 import math
 import random
-import argparse
 
-def eos_radii_posterior(eos_name, N, m_sigma, r_sigma, label):
-    # Produces the possible masses and radii for any equation of state
-
-    eos = lalsim.SimNeutronStarEOSByName(eos_name)
-    fam = lalsim.CreateSimNeutronStarFamily(eos)
-
-    working_masses = []
-    working_radii = []
+def radius_mass_prior(mc_file, outputfile):
+    # Constructs bivariate mass compactness distribution, and then computes radius.
+    
+    masses, compacts = np.loadtxt(mc_file).T
+    median_mass = np.median(masses)
+    std_mass = np.std(masses)
+    median_compact = np.median(compacts)
+    std_compact = np.std(compacts)
+    
     N_count = 0
-    while N_count < N:
+    working_masses = []
+    while N_count < len(masses):
         try:
-            m = np.random.normal(1.4, m_sigma, 1)[0] # mean mass of 1.4, standard deviation of m_sigma
-            if m < 1.0: continue # mass can't be less than 1 solar mass
-            radius = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam) # actual radius for m given eos
-            rr = np.random.normal(radius, r_sigma, 1)[0] # tampered radius to simulate weak signal
+            m = np.random.normal(median_mass, std_mass, 1)[0]
+            if m < 1.0: continue
             working_masses.append(m)
-            working_radii.append(rr)
             N_count += 1
-        except RuntimeError: # ??? Error may have resulted from radius calculation (bad m)
-            continue
+        except RuntimeError: continue    
 
-    output = np.vstack((working_masses,working_radii)).T
-    outputfile = "new_data/mass_radii_{}.txt".format(label)
-    np.savetxt(outputfile, output, fmt="%f\t%f")
+    masses = np.array(working_masses)
+    compacts = np.random.normal(median_compact, std_compact, len(masses))
+    rads = masses*lal.MRSUN_SI/compacts
 
-def plot_radii_scatter(datafile, label):
-    # Plots scatter of eos' radii
-
-        pl.clf()
-        data = np.loadtxt(datafile)
-        masses = data[:,0]
-        ###radii = data[:,1]
-        radii = data[:,1] / 1000
-
-        pl.rcParams.update({"font.size":18})
-        pl.figure(figsize=(20,10))
-        pl.scatter(masses,radii,s=5)
-        pl.xlabel("Mass")
-        pl.ylabel("Radius")
-        pl.title("Radii vs Masses")
-        pl.savefig("plots/scatter_{}.png".format(label))
-
-def plot_radii_gaussian_kde(datafile, label, title, EoS=False):
-    # Plot the kde of the eos' radii distribution
-
-    pl.clf()
-    data = np.loadtxt(datafile)
-    m = data[:,0] 
-    r = data[:,1] / 1000
-
-    m_min, m_max = min(m), max(m) 
-    r_min, r_max = min(r), max(r)
-
-    # Perform the kernel density estimate
-    mm, rr = np.mgrid[m_min:m_max:1000j, r_min:r_max:1000j] # two 2d arrays
-    positions = np.vstack([mm.ravel(), rr.ravel()])
-    pairs = np.vstack([m, r])
-    kernel = st.gaussian_kde(pairs)
-    f = np.reshape(kernel(positions).T, mm.shape)
-
-    fig = pl.figure()
-    ax = fig.gca()
-    ax.set_xlim(m_min, m_max)
-    ax.set_ylim(r_min, r_max)
-
-    ax.pcolormesh(mm, rr, f)
-    ax.set_xlabel('Mass')
-    ax.set_ylabel('Radius (km)')
-    pl.scatter(m,r,s=1,color="black")
-    if type(EoS) == str:
-        mass, radii = np.loadtxt(EoS).T
-        radii = radii / 1000
-        pl.plot(mass, radii, color="red")
-    pl.title(title)
-    pl.colorbar()
-    pl.savefig("plots/{}.png".format(label), bbox_inches='tight')
+    data = np.array([masses, rads]).T
+    np.savetxt(outputfile, data)
 
 class parametric_EoS:
-    # Uses r-m distribution to get [g1,g2,g3,g4] distribution.
+    # Uses c-m or r-m distribution to get [g1,g2,g3,g4] distribution.
 
-    def __init__(self, mr_file, N=1000, spectral=True):
+    def __init__(self, mc_mr_file, N=1000, spectral=True, reweighting=None):
         '''
         Constructor that sets up prior bounds for selected parametric model
         and sets up interpolent/kernel thats used to calculate each sample's
-        likelihood. The m-r txt file's format needs to be in the following
+        likelihood. The m-c/m-r txt file's format needs to be in the following
         format:
-        #mass       radius
+        #mass       radius/compactness
         ...         ...
         ...         ...
         max_mass    ...
@@ -110,11 +56,18 @@ class parametric_EoS:
         if spectral: self.priorbounds = {'gamma1':{'params':{"min":0.2,"max":2.00}},'gamma2':{'params':{"min":-1.6,"max":1.7}},'gamma3':{'params':{"min":-0.6,"max":0.6}},'gamma4':{'params':{"min":-0.02,"max":0.02}}}
         else: self.priorbounds = {'logP':{'params':{"min":32.6,"max":33.5}},'gamma1':{'params':{"min":2.0,"max":4.5}},'gamma2':{'params':{"min":1.1,"max":4.5}},'gamma3':{'params':{"min":1.1,"max":4.5}}}
         self.spectral = spectral
-
-        masses, radii = np.loadtxt(mr_file, unpack=True)
-        pairs = np.vstack([masses, radii])
-        self.kernel = st.gaussian_kde(pairs)
         self.N = N
+        self.reweighting = reweighting
+
+        masses, compacts_rads = np.loadtxt(mc_mr_file, unpack=True) # compacts_rads is variable that interchangebly holds compactnesses or radii values
+        pairs1 = np.vstack([masses, compacts_rads])
+        self.kernel1 = st.gaussian_kde(pairs1)
+
+        if type(self.reweighting) == str:
+            mr_file = self.reweighting
+            masses, rads = np.loadtxt(mr_file, unpack=True) # reweighting file is the mr-prior distribution (nonuniform)
+            pairs2 = np.vstack([masses, rads])
+            self.kernel2 = st.gaussian_kde(pairs2)
 
     def log_prior(self, parameters):
         '''
@@ -153,16 +106,27 @@ class parametric_EoS:
                 m_grid = m_grid[m_grid <= max_mass]
 
                 working_masses = []
-                working_radii = []
+                working_rads = []
+                working_compacts = []
                 for m in m_grid:
                     try:
                         r = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                        c = m*lal.MRSUN_SI/r
                         working_masses.append(m)
-                        working_radii.append(r)
+                        working_rads.append(r)
+                        working_compacts.append(c)
                     except RuntimeError:
                         continue
 
-                return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
+                if type(self.reweighting) == str:
+                    K1 = np.array(self.kernel1(np.vstack([working_masses, working_rads]))) # posterior
+                    K2 = np.array(self.kernel2(np.vstack([working_masses, working_rads]))) # nonuniform prior
+                else: 
+                    K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts]))) # posterior
+                    K2 = 1 # uniform prior
+
+                return math.log(np.sum(K1/K2)*np.diff(working_masses)[0]) # likelihood
+
             except RuntimeError: return - np.inf
             except IndexError: return - np.inf
 
@@ -222,7 +186,7 @@ class parametric_EoS:
 
         if self.spectral: model = "spectral"
         else: model = "piecewise"
-        outputfile = "./{}_samples_{}.txt".format(model,label)
+        outputfile = "run_data/{}_samples_{}.txt".format(model,label)
         np.savetxt(outputfile, flat_samples)
 
 class p_rho_EoS:
@@ -284,11 +248,11 @@ class p_rho_EoS:
             troublesome_psamples[lp] = troublesome_samples
             p_densities[lp] = density_grid
 
-        with open("./{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
+        with open("run_data/{}_pressure_densities_{}.json".format(self.model,self.label), "w") as f:
             json.dump(p_densities, f, indent=2, sort_keys=True)
 
         if checker == True:
-            with open("./{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
+            with open("run_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
                 json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
     def confidence_interval(self, p_dens_file, plot=True, EoS=False):
@@ -320,7 +284,7 @@ class p_rho_EoS:
             upper_bound.append(max(bin_cent_ord[include]))
 
         rho_vals = np.array([self.logp_grid, lower_bound, median, upper_bound]).T
-        outputfile = "./{}_p_vs_rho_{}.txt".format(self.model,self.label)
+        outputfile = "run_data/{}_p_vs_rho_{}.txt".format(self.model,self.label)
         np.savetxt(outputfile, rho_vals)
 
         if plot:
@@ -355,31 +319,5 @@ class p_rho_EoS:
             pl.ylabel("Log Pressure")
             pl.title("Pressure vs Density")
             pl.legend()
-            pl.savefig("./{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
-
-def plot_parameter_distribution(filename, label, EoS=False):
-    # Plots distributions of "detailed" parameter distributions
-
-    data = np.loadtxt(filename)
-
-    sns.set()
-    fig, axes = pl.subplots(2,2,figsize=(7,7))
-
-    sns.kdeplot(data[:,0],ax=axes[0,0]).set_title("Gamma 1")
-    sns.kdeplot(data[:,1],ax=axes[0,1]).set_title("Gamma 2")
-    sns.kdeplot(data[:,2],ax=axes[1,0]).set_title("Gamma 3")
-    sns.kdeplot(data[:,3],ax=axes[1,1]).set_title("Gamma 4")
-
-    if EoS:
-        APR4_EPP_g1 = .6483014736029169
-        APR4_EPP_g2 = .22549530718867078
-        APR4_EPP_g3 = -.020071115984931484
-        APR4_EPP_g4 = -.0003498568113544248
-        axes[0,0].axvline(APR4_EPP_g1, color="r")
-        axes[0,1].axvline(APR4_EPP_g2, color="r")
-        axes[1,0].axvline(APR4_EPP_g3, color="r")
-        axes[1,1].axvline(APR4_EPP_g4, color="r")
-
-    pl.tight_layout()
-    pl.savefig("plots/dist_kde_{}.png".format(label))
+            pl.savefig("plots/{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
 

@@ -9,32 +9,46 @@ import math
 
 class sample_samples:
 
-    def __init__(self, mr_mc_file, spectral_file, N=1000):
+    def __init__(self, mc_mr_file, spectral_file, N=1000, reweighting=None):
     # Sample through GW-source samples using mr-evidence / mc-evidence as likelihood.
         
         self.priorbounds = {'gamma1':{'params':{"min":0.2,"max":2.00}},'gamma2':{'params':{"min":-1.6,"max":1.7}},'gamma3':{'params':{"min":-0.6,"max":0.6}},'gamma4':{'params':{"min":-0.02,"max":0.02}}}
 
-        masses, radii_cs = np.loadtxt(mr_mc_file, unpack=True)
-        pairs = np.vstack([masses,radii_cs])
-        self.kernel = st.gaussian_kde(pairs)
-        self.samples = np.loadtxt(spectral_file)
+        masses, compacts_rads = np.loadtxt(mc_mr_file, unpack=True)
+        pairs1 = np.vstack([masses,compacts_rads])
+        self.kernel1 = st.gaussian_kde(pairs1)
+        data = np.loadtxt(spectral_file)
+        self.samples = data[:,:-1]
+        self.ls = np.exp(data[:,-1])
         self.N = N
+
+        if type(self.reweighting) == str:
+            mr_file = self.reweighting
+            masses, rads = np.loadtxt(mr_file, unpack=True)
+            pairs2 = np.vstack([masses, rads])
+            self.kernel2 = st.gaussian_kde(pairs2)
 
     def run_MCMC(self, outputfile, burnin=10000):
     # Metropolis algorithm, slightly different
         
         old_sample = self.samples[0]
-        L1 = self.likelihood(self.samples[0])
+        E1 = self.likelihood(self.samples[0])
+        G1 = self.ls[0]
 
         post_samples = []
         post_ls = []
+        count = 1
         for new_sample in self.samples[1:]:
             
-            L2 = self.likelihood(new_sample)
+            E2 = self.likelihood(new_sample)
+            G2 = self.ls[count]
             
-            if L2/L1 >= np.random.random():
+            if (E2/E1)*(G1/G2) >= np.random.random():
                 old_sample = new_sample
-                L1 = L2
+                E1 = E2
+                G1 = G2
+
+            count += 1
 
             post_samples.append(list(old_sample))
             post_ls.append(L1)
@@ -46,8 +60,8 @@ class sample_samples:
         with open(outputfile, "w") as f:
             json.dump(data, f, indent=2, sort_keys=True)
 
-    def likelihood(self, parameters, compactness=True):
-    # Uses m-r or m-c 1D integral to weight each sample
+    def likelihood(self, parameters):
+    # Uses m-c/m-r 1D integral to weight each sample
 
         g1, g2, g3, g4 = parameters
         params = {"gamma1":np.array([g1]),"gamma2":np.array([g2]),"gamma3":np.array([g3]),"gamma4":np.array([g4])}
@@ -63,8 +77,8 @@ class sample_samples:
             m_grid = m_grid[m_grid <= max_mass]
 
             working_masses = []
-            working_radii = []
-            working_cs = []
+            working_rads = []
+            working_compacts = []
             for m in m_grid:
                 try:
                     r = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
@@ -75,9 +89,14 @@ class sample_samples:
                 except RuntimeError:
                     continue
 
-            if compactness: return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_cs])))*np.diff(working_masses)[0]))
+            if type(self.reweighting) == str:
+                K1 = np.array(self.kernel1(np.vstack([working_masses, working_radii])))
+                K2 = np.array(self.kernel2(np.vstack([working_masses, working_radii])))
+            else:
+                K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts])))
+                K2 = 1
 
-            else: return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
+            return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
 
         else: return - np.inf
 
