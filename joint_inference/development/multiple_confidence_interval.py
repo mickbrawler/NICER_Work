@@ -8,9 +8,9 @@ def plot_intervals(outputfile):
 
     pl.clf()
     
-    Files = ["run_data/spectral_p_vs_rho_thinned_GW_spectral_confidence.txt", "run_data/spectral_p_vs_rho_GW_EM_spectral_sampled_confidence_viacs.txt"]
-    labels = ["GW", "EM + GW"]
-    colors = ["red", "green"]
+    Files = ["run_data/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_GW_EM_switch_sampled_samples_confidence_metrohast.txt"]
+    labels = ["EM", "GW", "EM + GW"]
+    colors = ["blue", "red", "green"]
 
     for File, label, color in zip(Files,labels,colors):
 

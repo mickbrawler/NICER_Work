@@ -11,5 +11,5 @@ done
 
 python monitor.py 100
 
-python combine.py "19k_EM_samples_viacs"
+python combine.py "still-not-in-use"
 

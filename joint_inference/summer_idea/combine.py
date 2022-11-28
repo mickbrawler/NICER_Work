@@ -2,6 +2,7 @@ import json
 import argparse
 
 def combine_multiprocessing(label):
+    # currently not using label argument. Should use in the future...
 
     p_densities = {}
     for job in range(100):
@@ -12,8 +13,7 @@ def combine_multiprocessing(label):
         for key in list(piece.keys()):
             p_densities[key] = piece[key]
 
-    filename = "LIGO_presentation/new_data/GW_EM_spectral_sampled_p_rho_viacs.json"
-#    filename = "LIGO_presentation/new_data/thinned_GW_spectral_p_rho.json"
+    filename = "../development/run_data/W100_S10000_EM_switch_spectral_p_rho.json"
     with open(filename, "w") as f:
         json.dump(p_densities, f, indent=2, sort_keys=True)
 

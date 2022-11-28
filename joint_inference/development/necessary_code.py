@@ -13,7 +13,7 @@ import math
 import random
 
 def radius_mass_prior(mc_file, outputfile):
-    # Constructs bivariate mass compactness distribution, and then computes radius.
+    # Constructs gaussian mass & compactness distribution, and then computes radius.
     
     masses, compacts = np.loadtxt(mc_file).T
     median_mass = np.median(masses)
@@ -24,12 +24,11 @@ def radius_mass_prior(mc_file, outputfile):
     N_count = 0
     working_masses = []
     while N_count < len(masses):
-        try:
-            m = np.random.normal(median_mass, std_mass, 1)[0]
-            if m < 1.0: continue
-            working_masses.append(m)
-            N_count += 1
-        except RuntimeError: continue    
+
+        m = np.random.normal(median_mass, std_mass, 1)[0]
+        if m < 1.0: continue
+        working_masses.append(m)
+        N_count += 1
 
     masses = np.array(working_masses)
     compacts = np.random.normal(median_compact, std_compact, len(masses))
@@ -121,6 +120,7 @@ class parametric_EoS:
                 if type(self.reweighting) == str:
                     K1 = np.array(self.kernel1(np.vstack([working_masses, working_rads]))) # posterior
                     K2 = np.array(self.kernel2(np.vstack([working_masses, working_rads]))) # nonuniform prior
+                    if min(K2) == 0: return - np.inf # Avoids a division by zero error
                 else: 
                     K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts]))) # posterior
                     K2 = 1 # uniform prior

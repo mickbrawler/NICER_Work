@@ -20,6 +20,7 @@ class sample_samples:
         data = np.loadtxt(spectral_file)
         self.samples = data[:,:-1]
         self.ls = np.exp(data[:,-1])
+        self.reweighting = reweighting
         self.N = N
 
         if type(self.reweighting) == str:
@@ -51,7 +52,7 @@ class sample_samples:
             count += 1
 
             post_samples.append(list(old_sample))
-            post_ls.append(L1)
+            post_ls.append(E1)
 
         post_samples = post_samples[burnin:]
         post_ls = post_ls[burnin:]
@@ -84,19 +85,19 @@ class sample_samples:
                     r = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
                     c = m*lal.MRSUN_SI/r
                     working_masses.append(m)
-                    working_radii.append(r)
-                    working_cs.append(c)
+                    working_rads.append(r)
+                    working_compacts.append(c)
                 except RuntimeError:
                     continue
 
             if type(self.reweighting) == str:
-                K1 = np.array(self.kernel1(np.vstack([working_masses, working_radii])))
-                K2 = np.array(self.kernel2(np.vstack([working_masses, working_radii])))
+                K1 = np.array(self.kernel1(np.vstack([working_masses, working_rads])))
+                K2 = np.array(self.kernel2(np.vstack([working_masses, working_rads])))
             else:
                 K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts])))
                 K2 = 1
 
-            return math.log(np.sum(np.array(self.kernel(np.vstack([working_masses, working_radii])))*np.diff(working_masses)[0]))
+            return math.log(np.sum((K1/K2)*np.diff(working_masses)[0]))
 
         else: return - np.inf
 
