@@ -93,11 +93,12 @@ class sample_samples:
             if type(self.reweighting) == str:
                 K1 = np.array(self.kernel1(np.vstack([working_masses, working_rads])))
                 K2 = np.array(self.kernel2(np.vstack([working_masses, working_rads])))
+                if min(K2) == 0: return - np.inf # Avoids a division by zero error
             else:
                 K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts])))
                 K2 = 1
 
-            return math.log(np.sum((K1/K2)*np.diff(working_masses)[0]))
+            return math.log(np.sum(K1/K2)*np.diff(working_masses)[0])
 
         else: return - np.inf
 

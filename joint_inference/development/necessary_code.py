@@ -7,6 +7,7 @@ import lal
 import numpy as np
 import matplotlib.pyplot as pl
 import seaborn as sns
+import h5py
 import json
 import emcee
 import math
@@ -176,16 +177,26 @@ class parametric_EoS:
 
                 sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_posterior,pool=pool)
                 sampler.run_mcmc(p0, sample_size, progress=True)
-
+                raw_samples = sampler.get_chain()
+                raw_ls = sampler.get_log_prob()
                 flat_samples = sampler.get_chain(discard=100, thin=15, flat=True)
         else:
 
             sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_posterior)
             sampler.run_mcmc(p0, sample_size, progress=True)
+            raw_samples = sampler.get_chain()
+            raw_ls = sampler.get_log_prob()
             flat_samples = sampler.get_chain(discard=100, thin=15, flat=True)
 
         if self.spectral: model = "spectral"
         else: model = "piecewise"
+
+        outputfile = "run_data/{}_rawsamples_{}.h5".format(model,label)
+        f=h5py.File(outputfile,'w')
+        f.create_dataset('chains',data=np.array(raw_samples))
+        f.create_dataset('logp',data=np.array(raw_ls))
+        f.close()
+
         outputfile = "run_data/{}_samples_{}.txt".format(model,label)
         np.savetxt(outputfile, flat_samples)
 
@@ -255,7 +266,7 @@ class p_rho_EoS:
             with open("run_data/{}_pressure_troublesome_samples_{}.json".format(self.model,self.label), "w") as f:
                 json.dump(troublesome_psamples, f, indent=2, sort_keys=True)
 
-    def confidence_interval(self, p_dens_file, plot=True, EoS=False):
+    def confidence_interval(self, p_dens_file, plot=True, EoS=False, Bins=50):
         '''
         Saves logp_grid, lower_bound, median, upper_bound of parametric
         distribution. Can plot them as well.
@@ -272,7 +283,7 @@ class p_rho_EoS:
         counter = 0
         for p_rhos in density_matrix:
 
-            bins, bin_bounds = np.histogram(p_rhos,bins=50,density=True)
+            bins, bin_bounds = np.histogram(p_rhos,bins=Bins,density=True)
             bin_centers = (bin_bounds[1:] + bin_bounds[:-1]) / 2
             order = np.argsort(-bins)
             bins_ordered = bins[order]
