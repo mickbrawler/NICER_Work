@@ -16,20 +16,13 @@ def plot_intervals(outputfile):
 #    labels = ["EM_switch", "EM_reweight"]
 #    colors = ["black", "yellow"]
 
-    Files = ["run_data/thinned_GW_spectral_samples.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt"]
+    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt"]
     labels = ["GW", "random20k", "random30k"]
     colors = ["red", "green", "blue"]
 
-    failsafe = 0
     for File, label, color in zip(Files,labels,colors):
 
-        if failsafe == 0:
-            logp_grid, lower_bound, median, upper_bound, _ = np.loadtxt(File).T
-        
-        else:
-            logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
-
-        failsafe += 1
+        logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
         ax1 = pl.gca()
         ax1.set_xscale("log")
