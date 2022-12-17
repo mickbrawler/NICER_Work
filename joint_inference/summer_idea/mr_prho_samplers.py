@@ -369,7 +369,7 @@ def multiprocess_p_rho_grid(p_index):
     p_index     : Index of pressures to find densities of.
     '''
     
-    samples_file = "../development/run_data/joint_samples2.txt"
+    samples_file = "../development/run_data/appended_EM_switch_GW_thinned_samples.txt"
 #    with open(samples_file,"r") as f:
 #        data = json.load(f)
 #    parametric_samples = data["samples"]

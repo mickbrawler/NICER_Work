@@ -13,7 +13,7 @@ def combine_multiprocessing(label):
         for key in list(piece.keys()):
             p_densities[key] = piece[key]
 
-    filename = "../development/run_data/GW_EM_joint_samples2.json"
+    filename = "../development/run_data/appended_EM_switch_GW_thinned.json"
     with open(filename, "w") as f:
         json.dump(p_densities, f, indent=2, sort_keys=True)
 
