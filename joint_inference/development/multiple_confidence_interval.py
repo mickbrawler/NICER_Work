@@ -16,9 +16,17 @@ def plot_intervals(outputfile):
 #    labels = ["EM_switch", "EM_reweight"]
 #    colors = ["black", "yellow"]
 
-    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_EM_switch_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
-    labels = ["GW", "EM", "random20k", "random30k","appended"]
-    colors = ["red", "yellow", "green", "blue", "purple"]
+#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_EM_switch_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
+#    labels = ["GW", "EM", "random20k", "random30k","appended"]
+#    colors = ["red", "yellow", "green", "blue", "purple"]
+
+    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
+    labels = ["GW", "random20k", "appended"]
+    colors = ["red", "green", "purple"]
+
+#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
+#    labels = ["GW", "random30k","appended"]
+#    colors = ["red", "blue", "purple"]
 
     for File, label, color in zip(Files,labels,colors):
 
