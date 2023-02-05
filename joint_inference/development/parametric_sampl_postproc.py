@@ -13,31 +13,6 @@ import emcee
 import math
 import random
 
-def radius_mass_prior(mc_file, outputfile):
-    # Constructs gaussian mass & compactness distribution, and then computes radius.
-    
-    masses, compacts = np.loadtxt(mc_file).T
-    median_mass = np.median(masses)
-    std_mass = np.std(masses)
-    median_compact = np.median(compacts)
-    std_compact = np.std(compacts)
-    
-    N_count = 0
-    working_masses = []
-    while N_count < len(masses):
-
-        m = np.random.normal(median_mass, std_mass, 1)[0]
-        if m < 1.0: continue
-        working_masses.append(m)
-        N_count += 1
-
-    masses = np.array(working_masses)
-    compacts = np.random.normal(median_compact, std_compact, len(masses))
-    rads = masses*lal.MRSUN_SI/compacts
-
-    data = np.array([masses, rads]).T
-    np.savetxt(outputfile, data)
-
 class parametric_EoS:
     # Uses c-m or r-m distribution to get [g1,g2,g3,g4] distribution.
 
@@ -332,3 +307,30 @@ class p_rho_EoS:
             pl.legend()
             pl.savefig("plots/{}_p_vs_rho_{}.png".format(self.model,self.label), bbox_inches='tight')
 
+def radius_mass_prior(mc_file, outputfile):
+    # Constructs gaussian mass & compactness distribution, and then computes radius.
+    # This function was made in an attempt to produce gaussian m-r data (serving as 
+    # a nonuniform prior) from gaussian m-c data. This m-r data would be used when 
+    # reweighting a likelihood from m-r data.
+    
+    masses, compacts = np.loadtxt(mc_file).T
+    median_mass = np.median(masses)
+    std_mass = np.std(masses)
+    median_compact = np.median(compacts)
+    std_compact = np.std(compacts)
+    
+    N_count = 0
+    working_masses = []
+    while N_count < len(masses):
+
+        m = np.random.normal(median_mass, std_mass, 1)[0]
+        if m < 1.0: continue
+        working_masses.append(m)
+        N_count += 1
+
+    masses = np.array(working_masses)
+    compacts = np.random.normal(median_compact, std_compact, len(masses))
+    rads = masses*lal.MRSUN_SI/compacts
+
+    data = np.array([masses, rads]).T
+    np.savetxt(outputfile, data)
