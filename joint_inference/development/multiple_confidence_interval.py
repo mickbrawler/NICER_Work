@@ -14,6 +14,14 @@ def plot_intervals(outputfile):
     labels = ["EM", "GW", "EM + GW"]
     colors = ["#1b9e77", "#7570b3", "#d95f02"]
 
+    plt.rc('axes', facecolor='#E6E6E6', edgecolor='none',
+       axisbelow=True, grid=True, prop_cycle=colors)
+    plt.rc('grid', color='w', linestyle='solid')
+    plt.rc('xtick', direction='out', color='gray')
+    plt.rc('ytick', direction='out', color='gray')
+    plt.rc('patch', edgecolor='#E6E6E6')
+    plt.rc('lines', linewidth=2)
+    
     for File, label, color in zip(Files,labels,colors):
 
         logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
