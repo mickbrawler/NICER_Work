@@ -9,10 +9,12 @@ def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
     pl.clf()
+    pl.rcParams.update({"font.size":18})
+    pl.figure(figsize=(15,10))
     
     Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_hierarchical.txt"]
     labels = ["EM", "GW", "EM + GW"]
-    colors = ["blue", "red", "green"]
+    colors = ["#1b9e77", "#7570b3", "#d95f02"]
 
     for File, label, color in zip(Files,labels,colors):
 
@@ -23,7 +25,7 @@ def plot_intervals(outputfile):
 
         pl.plot(lower_bound, logp_grid, label=label, color=color)
         pl.plot(upper_bound, logp_grid, color=color)
-        ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.5)
+        ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.25)
 
     pl.xlim([10**17, 10**19])
     pl.xlabel("Density")
