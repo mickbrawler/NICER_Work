@@ -10,25 +10,9 @@ def plot_intervals(outputfile):
 
     pl.clf()
     
-#    Files = ["run_data/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_GW_EM_switch_sampled_samples_confidence_metrohast.txt"]
-#    labels = ["EM", "GW", "EM + GW"]
-#    colors = ["blue", "red", "green"]
-
-#    Files = ["run_data/spectral_p_vs_rho_EM_switch_confidence.txt","run_data/spectral_p_vs_rho_EM_reweight_confidence.txt"]
-#    labels = ["EM_switch", "EM_reweight"]
-#    colors = ["black", "yellow"]
-
-#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_EM_switch_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
-#    labels = ["GW", "EM", "random20k", "random30k","appended"]
-#    colors = ["red", "yellow", "green", "blue", "purple"]
-
-    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples1.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
-    labels = ["GW", "random20k", "appended"]
-    colors = ["red", "green", "purple"]
-
-#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt","run_data/spectral_p_vs_rho_GW_EM_joint_samples2.txt","run_data/spectral_p_vs_rho_appended_EM_switch_GW_thinned.txt"]
-#    labels = ["GW", "random30k","appended"]
-#    colors = ["red", "blue", "purple"]
+    Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_hierarchical.txt"]
+    labels = ["EM", "GW", "EM + GW"]
+    colors = ["blue", "red", "green"]
 
     for File, label, color in zip(Files,labels,colors):
 
