@@ -6,14 +6,13 @@ import corner
 def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
-    pl.clf()
-    pl.rcParams.update({"font.size":18})
-    pl.figure(figsize=(15,10))
-
     Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_hierarchical.txt"]
     labels = ["EM", "GW", "EM + GW"]
     colors = ["#1b9e77", "#7570b3", "#d95f02"]
 
+    pl.clf()
+    pl.figure(figsize=(9,6))
+    pl.rc('font', size=12)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
     pl.rc('grid', color='w', linestyle='solid')
     pl.rc('xtick', direction='out', color='gray')
