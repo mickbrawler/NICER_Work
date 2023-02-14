@@ -14,3 +14,4 @@ joint_inference/summer_idea/data/
 joint_inference/summer_idea/__pycache__/
 joint_inference/development/run_data/
 joint_inference/development/__pycache__/
+joint_inference/development/postproc/
