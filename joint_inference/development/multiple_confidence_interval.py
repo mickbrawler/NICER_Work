@@ -3,6 +3,8 @@ import matplotlib.pyplot as pl
 import json
 import corner
 
+# PLOTTING SCRIPT IN NEED OF UPDATE
+
 def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
