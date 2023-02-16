@@ -13,6 +13,7 @@ import json
 import emcee
 import math
 import random
+import time
 
 class parametric_EoS:
     # Uses c-m or r-m distribution to get [g1,g2,g3,g4] distribution.
@@ -137,6 +138,8 @@ class parametric_EoS:
         ndim = 4
         p0 = self.n_walker_points(nwalkers)
 
+        start = time.time()
+
         if npool > 1:
 
             with Pool(min(cpu_count(),npool)) as pool:
@@ -153,6 +156,10 @@ class parametric_EoS:
             raw_samples = sampler.get_chain()
             raw_ls = sampler.get_log_prob()
             flat_samples = sampler.get_chain(discard=100, thin=15, flat=True)
+
+        end = time.time()
+        duration = (end-start)/3600
+        print("Time: {} hours".format(duration))
 
         if self.spectral: model = "spectral"
         else: model = "piecewise"
