@@ -1,22 +1,31 @@
 import numpy as np
 import emcee as mc
 import h5py
+import lal
 
-def random_choice(mr_file, N, outputfile):
+def random_choice(mr_file, N, label="N50k_J0740"):
+    # ADD COMPACTNESS CALCULATION AND MAKE AS SEPARATE FILES
     # Randomly chooses N points from mr posterior
 
-    km_radii, masses = np.loadtxt(mr_file).T
-    samples = np.array([masses,km_radii*1000]).T # rearrange Miller's m-r distribution to be in m, r (meters)
+    km_radii, masses, _ = np.loadtxt(mr_file).T
+    m_radii = km_radii*1000
+    cc = masses*lal.MRSUN_SI/m_radii
+
+    mr_samples = np.array([masses,m_radii]).T # rearrange Miller's m-r distribution to be in m, r (meters)
+    mc_samples = np.array([masses,cc]).T
     
-    random_positions = [np.random.randint(0,len(samples))]
+    random_positions = [np.random.randint(0,len(mr_samples))]
     while len(random_positions) < N:
-        random = np.random.randint(0,len(samples))
+        random = np.random.randint(0,len(mr_samples))
         appearances = np.sum(random == np.array(random_positions))
         if appearances == 0:
             random_positions.append(random)
 
-    shortened_samples = samples[random_positions]
-    np.savetxt(outputfile, shortened_samples)
+    shortened_mr_samples = mr_samples[random_positions]
+    shortened_mc_samples = mc_samples[random_positions]
+
+    np.savetxt(label+"_RM.txt", shortened_mr_samples)
+    np.savetxt(label+"_CM.txt", shortened_mc_samples)
 
 def thinner(spectral_file, outputfile, burnin=1000):
     # Shortens large spectral sample file resulting from emcee run
