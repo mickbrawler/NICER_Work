@@ -10,9 +10,9 @@ def plot_intervals(outputfile):
 #    labels = ["EM", "GW", "EM + GW"]
 #    colors = ["#1b9e77", "#7570b3", "#d95f02"]
 
-    Files = ["run_data/spectral_p_vs_rho_W100_S10000_J0740_confidence.txt"]
-    labels = ["EM"]
-    colors = ["#1b9e77"]
+    Files = ["run_data/spectral_p_vs_rho_W100_S10000_J0740_confidence.txt", "run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt"]
+    labels = ["J0740", "J0030"]
+    colors = ["#1b9e77", "#7570b3"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
