@@ -1,4 +1,5 @@
 from GWXtreme import eos_prior as ep
+from GWXtreme import eos_model_selection as ems
 from multiprocessing import cpu_count, Pool
 from scipy import interpolate
 import scipy.stats as st
@@ -12,11 +13,12 @@ import json
 import emcee
 import math
 import random
+import time
 
 class parametric_EoS:
     # Uses c-m or r-m distribution to get [g1,g2,g3,g4] distribution.
 
-    def __init__(self, mc_mr_file, N=1000, spectral=True, reweighting=None):
+    def __init__(self, mc_mr_files, N=1000, spectral=True, joint=True):
         '''
         Constructor that sets up prior bounds for selected parametric model
         and sets up interpolent/kernel thats used to calculate each sample's
@@ -30,19 +32,23 @@ class parametric_EoS:
 
         if spectral: self.priorbounds = {'gamma1':{'params':{"min":0.2,"max":2.00}},'gamma2':{'params':{"min":-1.6,"max":1.7}},'gamma3':{'params':{"min":-0.6,"max":0.6}},'gamma4':{'params':{"min":-0.02,"max":0.02}}}
         else: self.priorbounds = {'logP':{'params':{"min":32.6,"max":33.5}},'gamma1':{'params':{"min":2.0,"max":4.5}},'gamma2':{'params':{"min":1.1,"max":4.5}},'gamma3':{'params':{"min":1.1,"max":4.5}}}
+        self.joint = joint
         self.spectral = spectral
         self.N = N
-        self.reweighting = reweighting
+        self.mc_mr_files = mc_mr_files
 
-        masses, compacts_rads = np.loadtxt(mc_mr_file, unpack=True) # compacts_rads is variable that interchangebly holds compactnesses or radii values
-        pairs1 = np.vstack([masses, compacts_rads])
-        self.kernel1 = st.gaussian_kde(pairs1)
+        # Gonna hardcode multiple EM event situation since thats all we've got for now
+        masses1, compacts_rads1 = np.loadtxt(self.mc_mr_files[0], unpack=True) # compacts_rads is variable that interchangebly holds compactnesses or radii values
+        pairs1 = np.vstack([masses1, compacts_rads1])
+        self.kernel_EM1 = st.gaussian_kde(pairs1)
+        
+        if len(self.mc_mr_files) == 2:
+            masses2, compacts_rads2 = np.loadtxt(self.mc_mr_files[1], unpack=True) 
+            pairs2 = np.vstack([masses2, compacts_rads2])
+            self.kernel_EM2 = st.gaussian_kde(pairs2)
 
-        if type(self.reweighting) == str:
-            mr_file = self.reweighting
-            masses, rads = np.loadtxt(mr_file, unpack=True) # reweighting file is the mr-prior distribution (nonuniform)
-            pairs2 = np.vstack([masses, rads])
-            self.kernel2 = st.gaussian_kde(pairs2)
+        if self.joint:
+            self.modsel = ems.Model_selection(posteriorFile="./run_data/posterior_samples/posterior_samples_narrow_spin_prior.dat", spectral=self.spectral)
 
     def log_prior(self, parameters):
         '''
@@ -93,15 +99,19 @@ class parametric_EoS:
                     except RuntimeError:
                         continue
 
-                if type(self.reweighting) == str:
-                    K1 = np.array(self.kernel1(np.vstack([working_masses, working_rads]))) # posterior
-                    K2 = np.array(self.kernel2(np.vstack([working_masses, working_rads]))) # nonuniform prior
-                    if min(K2) == 0: return - np.inf # Avoids a division by zero error
-                else: 
-                    K1 = np.array(self.kernel1(np.vstack([working_masses, working_compacts]))) # posterior
-                    K2 = 1 # uniform prior
+                dm = np.diff(working_masses)[0]
+                K_EM1 = np.sum(np.array(self.kernel_EM1(np.vstack([working_masses, working_compacts])))) # posterior
 
-                return math.log(np.sum(K1/K2)*np.diff(working_masses)[0]) # likelihood
+                if len(self.mc_mr_files) == 2:
+                    K_EM2 = np.sum(np.array(self.kernel_EM2(np.vstack([working_masses, working_compacts])))) # posterior
+
+                else: K_EM2 = 1
+
+                if self.joint:
+                    K_GW = self.modsel.eos_evidence(parameters)
+                    return math.log(K_EM1*K_EM2*K_GW*dm) # likelihood
+
+                else: return math.log(K_EM1*dm)
 
             except RuntimeError: return - np.inf
             except IndexError: return - np.inf
@@ -146,6 +156,8 @@ class parametric_EoS:
         ndim = 4
         p0 = self.n_walker_points(nwalkers)
 
+        start = time.time()
+
         if npool > 1:
 
             with Pool(min(cpu_count(),npool)) as pool:
@@ -162,6 +174,10 @@ class parametric_EoS:
             raw_samples = sampler.get_chain()
             raw_ls = sampler.get_log_prob()
             flat_samples = sampler.get_chain(discard=100, thin=15, flat=True)
+
+        end = time.time()
+        duration = (end-start)/3600
+        print("Time: {} hours".format(duration))
 
         if self.spectral: model = "spectral"
         else: model = "piecewise"
