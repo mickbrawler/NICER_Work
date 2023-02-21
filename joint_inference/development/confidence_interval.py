@@ -6,9 +6,13 @@ import corner
 def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
-    Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_J0740_XMM_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
-    labels = ["J0300", "J0740_XMM", "GW", "EM + GW"]
-    colors = ["#a6611a", "#dfc27d", "#80cdc1", "#018571"]
+#    Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_J0740_XMM_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
+#    labels = ["J0300", "J0740_XMM", "GW", "EM + GW"]
+#    colors = ["#a6611a", "#dfc27d", "#80cdc1", "#018571"]
+
+    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
+    labels = ["GW", "EM + GW"]
+    colors = ["#f1a340", "#998ec3"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
