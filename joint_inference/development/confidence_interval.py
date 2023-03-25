@@ -29,12 +29,11 @@ def plot_intervals(outputfile):
     pl.clf()
     pl.figure(figsize=(9,6))
     pl.rc('font', size=12)
-#    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
-    pl.rc('axes', facecolor='black', edgecolor='none', axisbelow=False, grid=False)
+    pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
 #    pl.rc('grid', color='w', linestyle='solid')
     pl.rc('xtick', direction='out', color='black', labelcolor='black')
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
-    pl.rc('patch', edgecolor='#E6E6E6')
+#    pl.rc('patch', facecolor='#E6E6E6')
     pl.rc('lines', linewidth=2)
     
     for File, label, color in zip(Files,labels,colors):
