@@ -30,10 +30,10 @@ def plot_intervals(outputfile):
     pl.figure(figsize=(9,6))
     pl.rc('font', size=12)
 #    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
-    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=False, grid=False)
+    pl.rc('axes', facecolor='black', edgecolor='none', axisbelow=False, grid=False)
 #    pl.rc('grid', color='w', linestyle='solid')
-    pl.rc('xtick', direction='out', color='gray')
-    pl.rc('ytick', direction='out', color='gray')
+    pl.rc('xtick', direction='out', color='black')
+    pl.rc('ytick', direction='out', color='black')
     pl.rc('patch', edgecolor='#E6E6E6')
     pl.rc('lines', linewidth=2)
     
