@@ -6,34 +6,16 @@ import corner
 def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
-#    Files = ["run_data/3rd_r_c_switch/spectral_p_vs_rho_EM_switch_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_J0740_XMM_confidence.txt", "run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
-#    labels = ["J0300", "J0740_XMM", "GW", "EM + GW"]
-#    colors = ["#a6611a", "#dfc27d", "#80cdc1", "#018571"]
-
-#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
-#    labels = ["GW", "EM + GW"]
-#    colors = ["#f1a340", "#998ec3"]
-
-#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
-#    labels = ["GW170817"]
-#    colors = ["#d95f02"]
-
-#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
-#    labels = ["J0740"]
-#    colors = ["#7570b3"]
-
-    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-    labels = ["GW+EM"]
-    colors = ["#1b9e77"]
+    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+    labels = ["GW170817", "J0740", "GW+EM"]
+    colors = ["#d95f02", "#7570b3", "#1b9e77"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
     pl.rc('font', size=12)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
-#    pl.rc('grid', color='w', linestyle='solid')
     pl.rc('xtick', direction='out', color='black', labelcolor='black')
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
-#    pl.rc('patch', facecolor='#E6E6E6')
     pl.rc('lines', linewidth=2)
     
     for File, label, color in zip(Files,labels,colors):
