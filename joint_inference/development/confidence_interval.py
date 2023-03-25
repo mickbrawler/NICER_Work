@@ -15,17 +15,22 @@ def plot_intervals(outputfile):
 #    colors = ["#f1a340", "#998ec3"]
 
 #    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
-#    labels = ["GW"]
+#    labels = ["GW170817"]
 #    colors = ["#d95f02"]
 
     Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
-    labels = ["EM"]
-    colors = ["#d95f02"]
+    labels = ["J0740"]
+    colors = ["#7570b3"]
+
+#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+#    labels = ["GW+EM"]
+#    colors = ["#1b9e77"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
     pl.rc('font', size=12)
-    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
+#    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
+    pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=False, grid=False)
 #    pl.rc('grid', color='w', linestyle='solid')
     pl.rc('xtick', direction='out', color='gray')
     pl.rc('ytick', direction='out', color='gray')
