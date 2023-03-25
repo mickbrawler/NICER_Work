@@ -10,15 +10,23 @@ def plot_intervals(outputfile):
 #    labels = ["J0300", "J0740_XMM", "GW", "EM + GW"]
 #    colors = ["#a6611a", "#dfc27d", "#80cdc1", "#018571"]
 
-    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
-    labels = ["GW", "EM + GW"]
-    colors = ["#f1a340", "#998ec3"]
+#    Files = ["run_data/spectral_p_vs_rho_thinned_GW_confidence.txt", "run_data/spectral_p_vs_rho_W100_S10000_GW_J0300_J0740_XMM_hierarchical_confidence.txt"]
+#    labels = ["GW", "EM + GW"]
+#    colors = ["#f1a340", "#998ec3"]
+
+#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
+#    labels = ["GW"]
+#    colors = ["#d95f02"]
+
+    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
+    labels = ["EM"]
+    colors = ["#d95f02"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
     pl.rc('font', size=12)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='none', axisbelow=True, grid=True)
-    pl.rc('grid', color='w', linestyle='solid')
+#    pl.rc('grid', color='w', linestyle='solid')
     pl.rc('xtick', direction='out', color='gray')
     pl.rc('ytick', direction='out', color='gray')
     pl.rc('patch', edgecolor='#E6E6E6')
@@ -35,7 +43,8 @@ def plot_intervals(outputfile):
         pl.plot(upper_bound, logp_grid, color=color)
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.xlim([10**17, 10**19])
+#    pl.xlim([10**17, 10**19])
+    pl.xlim([10**17, 10**18.2])
     pl.xlabel("Density")
     pl.ylabel("Log Pressure")
     pl.legend()
