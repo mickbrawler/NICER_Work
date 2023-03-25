@@ -18,13 +18,13 @@ def plot_intervals(outputfile):
 #    labels = ["GW170817"]
 #    colors = ["#d95f02"]
 
-    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
-    labels = ["J0740"]
-    colors = ["#7570b3"]
+#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
+#    labels = ["J0740"]
+#    colors = ["#7570b3"]
 
-#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-#    labels = ["GW+EM"]
-#    colors = ["#1b9e77"]
+    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+    labels = ["GW+EM"]
+    colors = ["#1b9e77"]
 
     pl.clf()
     pl.figure(figsize=(9,6))
@@ -47,8 +47,7 @@ def plot_intervals(outputfile):
         pl.plot(upper_bound, logp_grid, color=color)
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-#    pl.xlim([10**17, 10**19])
-    pl.xlim([10**17.25, 10**18.2])
+    pl.xlim([10**17.1, 10**18.2])
     pl.xlabel("Density")
     pl.ylabel("Log Pressure")
     pl.legend()
