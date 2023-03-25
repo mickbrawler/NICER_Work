@@ -14,13 +14,13 @@ def plot_intervals(outputfile):
 #    labels = ["GW", "EM + GW"]
 #    colors = ["#f1a340", "#998ec3"]
 
-#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
-#    labels = ["GW170817"]
-#    colors = ["#d95f02"]
+    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
+    labels = ["GW170817"]
+    colors = ["#d95f02"]
 
-    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
-    labels = ["J0740"]
-    colors = ["#7570b3"]
+#    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
+#    labels = ["J0740"]
+#    colors = ["#7570b3"]
 
 #    Files = ["run_data/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
 #    labels = ["GW+EM"]
