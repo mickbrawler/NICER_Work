@@ -41,8 +41,8 @@ def plot_intervals(outputfile):
         pl.plot(upper_bound, logp_grid, color=color)
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.xlim([10**17.075, 10**18.2])
-    pl.xlabel(r'$\log10(\frac{kg}{m^3})$')
+    pl.xlim([10**17.085, 10**18.2])
+    pl.xlabel(r'$\log10((\frac{kg}{m^3}))$')
     pl.ylabel(r'$log10(Pa)$')
     pl.legend()
     pl.savefig(outputfile, bbox_inches='tight')
