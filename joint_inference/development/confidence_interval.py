@@ -23,7 +23,7 @@ def plot_intervals(outputfile):
 #    colors = ["#d95f02", "#7570b3", "#000000"]
 
     pl.clf()
-    pl.figure(figsize=(6,6))
+    pl.figure(figsize=(12,12))
     pl.rc('font', size=18)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
     pl.rc('xtick', direction='out', color='black', labelcolor='black')
@@ -41,11 +41,10 @@ def plot_intervals(outputfile):
         pl.plot(upper_bound, logp_grid, color=color)
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.xlim([10**17.1, 10**18.2])
-    pl.xlabel("Density")
-    pl.ylabel("Log Pressure")
+    pl.xlim([10**17.05, 10**18.2])
+    pl.xlabel('$\log10{\frac{kg}{m^3}}$')
+    pl.ylabel('$\log10{Pa}$')
     pl.legend()
-    pl.title("Pressure vs Density")
     pl.savefig(outputfile, bbox_inches='tight')
 
 def corner_plots(outputfile):
