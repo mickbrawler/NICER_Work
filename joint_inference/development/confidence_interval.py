@@ -23,7 +23,7 @@ def plot_intervals(outputfile):
 #    colors = ["#d95f02", "#7570b3", "#000000"]
 
     pl.clf()
-    pl.figure(figsize=(15,12))
+    pl.figure(figsize=(20,12))
     pl.rc('font', size=20)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
     pl.rc('xtick', direction='out', color='black', labelcolor='black')
