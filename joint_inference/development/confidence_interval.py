@@ -43,7 +43,7 @@ def plot_intervals(outputfile):
 
     pl.xlim([10**17.075, 10**18.2])
     pl.xlabel(r'$\log10{\frac{kg}{m^3}}$')
-    pl.ylabel(r'$\log10{Pa}$')
+    pl.ylabel(r'$log10(Pa)$')
     pl.legend()
     pl.savefig(outputfile, bbox_inches='tight')
 
