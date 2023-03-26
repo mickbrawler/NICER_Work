@@ -24,7 +24,7 @@ def plot_intervals(outputfile):
 
     pl.clf()
     pl.figure(figsize=(12,12))
-    pl.rc('font', size=18)
+    pl.rc('font', size=20)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
     pl.rc('xtick', direction='out', color='black', labelcolor='black')
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
@@ -41,9 +41,9 @@ def plot_intervals(outputfile):
         pl.plot(upper_bound, logp_grid, color=color)
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.xlim([10**17.05, 10**18.2])
-    pl.xlabel('$\log10{\frac{kg}{m^3}}$')
-    pl.ylabel('$\log10{Pa}$')
+    pl.xlim([10**17.075, 10**18.2])
+    pl.xlabel(r'$\log10{\frac{kg}{m^3}}$')
+    pl.ylabel(r'$\log10{Pa}$')
     pl.legend()
     pl.savefig(outputfile, bbox_inches='tight')
 
