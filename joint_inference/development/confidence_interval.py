@@ -6,9 +6,9 @@ import corner
 def plot_intervals(outputfile):
     # Plots differently sourced confidence intervals on top of each other.
 
-#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
-#    labels = ["GW170817"]
-#    colors = ["#d95f02"]
+    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
+    labels = ["GW170817"]
+    colors = ["#d95f02"]
 
 #    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
 #    labels = ["J0740"]
@@ -18,9 +18,9 @@ def plot_intervals(outputfile):
 #    labels = ["GW+EM"]
 #    colors = ["#1b9e77"]
 
-    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-    labels = ["GW170817", "J0740", "GW+EM"]
-    colors = ["#d95f02", "#7570b3", "#000000"]
+#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+#    labels = ["GW170817", "J0740", "GW+EM"]
+#    colors = ["#d95f02", "#7570b3", "#000000"]
 
     pl.clf()
     pl.figure(figsize=(12,12))
@@ -42,7 +42,7 @@ def plot_intervals(outputfile):
         ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
     pl.xlim([10**17.1, 10**18.2])
-    pl.xlabel(r'$log10(\frac{kg}{m^3})$')
+    pl.xlabel(r'$\frac{kg}{m^3}$')
     pl.ylabel(r'$log10(Pa)$')
     pl.legend()
     pl.savefig(outputfile, bbox_inches='tight')
