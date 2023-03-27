@@ -3,26 +3,22 @@ import matplotlib.pyplot as pl
 import json
 import corner
 
-def plot_intervals(outputfile):
+# Make x axis look like anarya's. Don't forget to update x axis
+
+def plot_intervals(outputfiles):
     # Plots differently sourced confidence intervals on top of each other.
 
-#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"]
-#    labels = ["GW170817"]
-#    colors = ["#d95f02"]
+# #1b9e77
 
-#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt"]
-#    labels = ["J0740"]
-#    colors = ["#7570b3"]
+    plotsFiles = [["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"],
+                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"],
+                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
+                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"]]
 
-    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-    labels = ["GW+EM"]
-    colors = ["#000000"]
+    plotsLabels = [["GW170817"], ["J0030"], ["GW+EM"], ["GW170817", "J0030", "GW+EM"]]
 
-#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-#    labels = ["GW170817", "J0740", "GW+EM"]
-#    colors = ["#d95f02", "#7570b3", "#000000"]
+    plotsColors = [["#d95f02"], ["#7570b3"], ["#000000"], ["#d95f02", "#7570b3", "#000000"]]
 
-    pl.clf()
     pl.figure(figsize=(12,12))
     pl.rc('font', size=20)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
@@ -30,22 +26,26 @@ def plot_intervals(outputfile):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
     
-    for File, label, color in zip(Files,labels,colors):
+    for Files, Labels, Colors, outputfile in zip(plotsFiles,plotsLabels,plotsColors, outputfiles): # increment over each plot file
+        for File, label, color in zip(Files, Labels, Colors): # increment over each plot
 
-        logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
+            pl.clf()
+            logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
+            lower_bound = np.log10(lower_bound)
+            upper_bound = np.log10(upper_bound)
 
-        ax1 = pl.gca()
-        ax1.set_xscale("log")
+            ax1 = pl.gca()
+    #        ax1.set_xscale("log")
 
-        pl.plot(lower_bound, logp_grid, label=label, color=color)
-        pl.plot(upper_bound, logp_grid, color=color)
-        ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
+            pl.plot(lower_bound, logp_grid, label=label, color=color)
+            pl.plot(upper_bound, logp_grid, color=color)
+            ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.xlim([10**17.1, 10**18.2])
-    pl.xlabel(r'$\frac{kg}{m^3}$')
-    pl.ylabel(r'$log10(Pa)$')
-    pl.legend()
-    pl.savefig(outputfile, bbox_inches='tight')
+        pl.xlim([17.1, 18.25])
+        pl.xlabel(r'$log10(\frac{kg}{m^3})$')
+        pl.ylabel(r'$log10(Pa)$')
+        pl.legend()
+        pl.savefig("plots/"+outputfile, bbox_inches='tight')
 
 def corner_plots(outputfile):
     # Plots differently sourced corner plots on top of each other.
