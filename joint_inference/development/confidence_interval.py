@@ -14,13 +14,13 @@ def plot_intervals(outputfile):
 #    labels = ["J0740"]
 #    colors = ["#7570b3"]
 
-#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-#    labels = ["GW+EM"]
-#    colors = ["#1b9e77"]
+    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+    labels = ["GW+EM"]
+    colors = ["#000000"]
 
-    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
-    labels = ["GW170817", "J0740", "GW+EM"]
-    colors = ["#d95f02", "#7570b3", "#000000"]
+#    Files = ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0740_hierarchical_confidence.txt"]
+#    labels = ["GW170817", "J0740", "GW+EM"]
+#    colors = ["#d95f02", "#7570b3", "#000000"]
 
     pl.clf()
     pl.figure(figsize=(12,12))
