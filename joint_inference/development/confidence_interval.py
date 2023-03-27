@@ -8,16 +8,15 @@ import corner
 def plot_intervals(outputfiles):
     # Plots differently sourced confidence intervals on top of each other.
 
-# #1b9e77
-
     plotsFiles = [["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"],
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"],
+                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt"],
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"]]
 
-    plotsLabels = [["GW170817"], ["J0030"], ["GW+EM"], ["GW170817", "J0030", "GW+EM"]]
+    plotsLabels = [["GW170817"], ["J0030"], ["J0740"], ["GW+EM"], ["GW170817", "J0030", "GW+EM"]]
 
-    plotsColors = [["#d95f02"], ["#7570b3"], ["#000000"], ["#d95f02", "#7570b3", "#000000"]]
+    plotsColors = [["#d95f02"], ["#7570b3"], ["#1b9e77"], ["#000000"], ["#d95f02", "#7570b3", "#000000"]]
 
     pl.figure(figsize=(12,12))
     pl.rc('font', size=20)
@@ -27,9 +26,10 @@ def plot_intervals(outputfiles):
     pl.rc('lines', linewidth=2)
     
     for Files, Labels, Colors, outputfile in zip(plotsFiles,plotsLabels,plotsColors, outputfiles): # increment over each plot file
+
+        pl.clf()
         for File, label, color in zip(Files, Labels, Colors): # increment over each plot
 
-            pl.clf()
             logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
             lower_bound = np.log10(lower_bound)
             upper_bound = np.log10(upper_bound)
