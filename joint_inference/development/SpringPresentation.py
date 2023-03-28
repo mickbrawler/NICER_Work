@@ -50,7 +50,7 @@ def namedEoS_p_rho(EoS_Name):
 def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
     N = 1000
-    min_log_pressure = 31.7
+    min_log_pressure = 31.5 # Usually 31.7, but didn't look right for overlap plot
     max_log_pressure = 35.0
 
     logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
