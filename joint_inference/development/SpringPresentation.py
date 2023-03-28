@@ -39,7 +39,7 @@ def namedEoS_p_rho(EoS_Name):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
-    pl.plot(np.log(density_grid), np.log(logp_grid), label=EoS_Name)
+    pl.plot(np.log(density_grid), logp_grid, label=EoS_Name)
 
     pl.xlim([17.1, 18.25])
     pl.xlabel(r'$log10(\frac{kg}{m^3})$')
