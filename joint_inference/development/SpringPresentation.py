@@ -49,13 +49,6 @@ def namedEoS_p_rho(EoS_Name):
 
 def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
-    N = 1000
-    min_log_pressure = 31.5 # Usually 31.7, but didn't look right for overlap plot
-    max_log_pressure = 35.0
-
-    logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
-    logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
-
     pl.figure(figsize=(12,12))
     pl.rc('font', size=20)
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
@@ -72,6 +65,13 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.plot(lower_bound, logp_grid, label=label, color=color)
     pl.plot(upper_bound, logp_grid, color=color)
     ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
+
+    N = 1000
+    min_log_pressure = 31.7
+    max_log_pressure = 35.0
+
+    logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
+    logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
 
     for EoS_Name in EoS_Names:
 
