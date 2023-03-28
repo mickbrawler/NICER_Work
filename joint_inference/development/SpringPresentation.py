@@ -67,7 +67,7 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
     N = 1000
-    min_log_pressure = 31.7
+    min_log_pressure = 31.5 # Adjusted from 31.7 for overlap plot
     max_log_pressure = 35.0
 
     logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
