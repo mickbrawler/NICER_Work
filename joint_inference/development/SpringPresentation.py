@@ -69,30 +69,28 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.plot(upper_bound, logp_grid, color=color)
     ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
-    pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
-
     N = 1000
     #min_log_pressure = 31.5 # Adjusted from 31.7 for overlap plot
     #max_log_pressure = 35.0
     #logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
     #logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
-
     for EoS_Name in EoS_Names:
 
         density_grid = []
         safety_logp_grid = []
+        eos = lalsim.SimNeutronStarEOSByName(EoS_Name)
         for lp in logp_grid:
 
-            eos = lalsim.SimNeutronStarEOSByName(EoS_Name)
             try:
                 density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(lp, eos)/lal.C_SI**2)
                 safety_logp_grid.append(lp)
             except RuntimeError: 
                 continue # ran into runtime error at some point due to energydensityofpressure function
 
-        pl.plot(np.log10(density_grid), safety_logp_grid, label=EoS_Name)
+        pl.plot(density_grid, safety_logp_grid, label=EoS_Name)
 
+    pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
+    pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
     pl.xlim([10**16.99, 10**18.25])
     pl.ylim([min(logp_grid), max(logp_grid)])
     pl.xlabel('Density')
