@@ -56,22 +56,27 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
-    File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"
-    label = "GW+EM"
-    color = "#000000"
+    File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"
+    label = "Joint Constraint"
+    color = "#7570b3"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
-    lower_bound, upper_bound = np.log10(lower_bound), np.log10(upper_bound)
+
     ax1 = pl.gca()
+    logp_grid = 10**logp_grid
+    pl.xscale("log")
+    pl.yscale("log")
     pl.plot(lower_bound, logp_grid, label=label, color=color)
     pl.plot(upper_bound, logp_grid, color=color)
     ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-    N = 1000
-    min_log_pressure = 31.5 # Adjusted from 31.7 for overlap plot
-    max_log_pressure = 35.0
+    pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
+    pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
 
-    logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
-    logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
+    N = 1000
+    #min_log_pressure = 31.5 # Adjusted from 31.7 for overlap plot
+    #max_log_pressure = 35.0
+    #logp_grid = np.linspace(min_log_pressure, max_log_pressure, N+1)
+    #logp_grid = logp_grid[:-1] # last val is max log pressure. For spectral method, density computation at this pressure causes a runtime error
 
     for EoS_Name in EoS_Names:
 
@@ -81,16 +86,17 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
             eos = lalsim.SimNeutronStarEOSByName(EoS_Name)
             try:
-                density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(10**lp, eos)/lal.C_SI**2)
+                density_grid.append(lalsim.SimNeutronStarEOSEnergyDensityOfPressure(lp, eos)/lal.C_SI**2)
                 safety_logp_grid.append(lp)
             except RuntimeError: 
                 continue # ran into runtime error at some point due to energydensityofpressure function
 
         pl.plot(np.log10(density_grid), safety_logp_grid, label=EoS_Name)
 
-    pl.xlim([17.1, 18.25])
-    pl.xlabel(r'$log10(\frac{kg}{m^3})$')
-    pl.ylabel(r'$log10(Pa)$')
+    pl.xlim([10**16.99, 10**18.25])
+    pl.ylim([min(logp_grid), max(logp_grid)])
+    pl.xlabel('Density')
+    pl.ylabel('Pressure')
     pl.legend()
     pl.savefig("plots/overlap_namedEoS_constraint_p_rho.png", bbox_inches='tight')
 

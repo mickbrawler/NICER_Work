@@ -32,7 +32,6 @@ def plot_intervals(outputfiles):
             logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
             ax1 = pl.gca()
-
             logp_grid = 10**logp_grid
             pl.xscale("log")
             pl.yscale("log")
