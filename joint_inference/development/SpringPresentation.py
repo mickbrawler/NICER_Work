@@ -56,8 +56,8 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
-    File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"
-    label = "Joint Constraint"
+    File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"
+    label = "Observation Constraint"
     color = "#7570b3"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
@@ -87,7 +87,7 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
             except RuntimeError: 
                 continue # ran into runtime error at some point due to energydensityofpressure function
 
-        pl.plot(density_grid, safety_logp_grid, label=EoS_Name)
+        pl.plot(density_grid, safety_logp_grid, label="Theoretical Model")
 
     pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
     pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
