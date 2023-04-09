@@ -43,10 +43,12 @@ def plot_intervals(outputfiles):
             pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
 
         pl.xlim([10**16.99, 10**18.25])
+        pl.ylim([min(logp_grid), max(logp_grid)])
         pl.xlabel('Density')
         pl.ylabel('Pressure')
         pl.legend()
         pl.savefig("plots/8th_cutoff_plotting/"+outputfile, bbox_inches='tight')
+        pl.clf()
 
 def corner_plots(outputfile):
     # Plots differently sourced corner plots on top of each other.
