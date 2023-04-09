@@ -40,7 +40,7 @@ def plot_intervals(outputfiles):
             ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
         pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
-        pl.text(10**17.75,10**34,"Super-Nuclear Density",fontsize=20)
+        pl.text(10**17.75,10**33,"Super-Nuclear Density",fontsize=20)
         pl.xlim([10**16.99, 10**18.25])
         pl.ylim([min(logp_grid), max(logp_grid)])
         pl.xlabel('Density')
