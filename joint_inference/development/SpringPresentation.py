@@ -58,7 +58,8 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
     #File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"
     File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"
-    label = "Observation Constraint"
+    #label = "Observation Constraint"
+    label = "Joint Constraint"
     color = "#000000"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
@@ -93,5 +94,6 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.xlabel('Density')
     pl.ylabel('Pressure')
     pl.legend()
-    pl.savefig("plots/overlap_APR4EPP_GW_constraint_p_rho.png", bbox_inches='tight')
+    #pl.savefig("plots/overlap_APR4EPP_GW_constraint_p_rho.png", bbox_inches='tight')
+    pl.savefig("plots/overlap_APR4EPP_joint_constraint_p_rho.png", bbox_inches='tight')
 
