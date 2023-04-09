@@ -24,7 +24,7 @@ def plot_intervals(outputfiles):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
     
-    for Files, Labels, Colors, outputfile in zip(plotsFiles,plotsLabels,plotsColors, outputfiles): # increment over each plot file
+    for Files, Labels, Colors, outputfile in zip(plotsFiles,plotsLabels,plotsColors,outputfiles): # increment over each plot file
 
         pl.clf()
         for File, label, color in zip(Files, Labels, Colors): # increment over each plot
@@ -32,7 +32,8 @@ def plot_intervals(outputfiles):
             logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
             ax1 = pl.gca()
-    #        ax1.set_xscale("log")
+            ax1.set_xscale("log")
+            ax1.set_yscale("log")
 
             logp_grid = 10**logp_grid
             pl.plot(lower_bound, logp_grid, label=label, color=color)
