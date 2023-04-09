@@ -32,15 +32,15 @@ def plot_intervals(outputfiles):
             logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
             ax1 = pl.gca()
-            ax1.set_xscale("log")
-            ax1.set_yscale("log")
 
             logp_grid = 10**logp_grid
+            pl.xscale("log")
+            pl.yscale("log")
             pl.plot(lower_bound, logp_grid, label=label, color=color)
             pl.plot(upper_bound, logp_grid, color=color)
             ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-        pl.xlim([10**17.1, 10**18.25])
+        pl.xlim([10**16.99, 10**18.25])
         pl.xlabel('Density')
         pl.ylabel('Pressure')
         pl.legend()
