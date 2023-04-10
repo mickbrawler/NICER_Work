@@ -60,8 +60,8 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"
     #label = "X-ray obs"
     label = "Joint"
-    #color = "#7570b3"
-    color = "#000000"
+    color = "#7570b3"
+    #color = "#000000"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
     ax1 = pl.gca()
