@@ -60,7 +60,8 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     #File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"
     label = "X-ray obs"
     #label = "Joint"
-    color = "#000000"
+    color = "#7570b3"
+    #color = "#000000"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
     ax1 = pl.gca()
@@ -84,12 +85,12 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
             except RuntimeError: 
                 continue # ran into runtime error at some point due to energydensityofpressure function
 
-        pl.plot(density_grid, safety_logp_grid, label="Theoretical Model", linestyle="dashed", linewidth=2)
+        pl.plot(density_grid, safety_logp_grid, label="Theoretical Model", linestyle="dashed", linewidth=4)
         #pl.plot(density_grid, safety_logp_grid, label=EoS_Name, linewidth=2)
 
-    pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
-    pl.text(1.5*10**17,10**31.75,"Nuclear Density",fontsize=16)
-    pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16)
+    pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="gray")
+    pl.text(1.8*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
+    pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16,color="black")
     pl.xlim([10**16.99, 10**18.25])
     pl.ylim([min(logp_grid), max(logp_grid)])
     pl.xlabel('Density')
