@@ -61,16 +61,13 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     #label = "X-ray obs"
     label = "Joint"
     #color = "#7570b3"
-    color = "#070606"
+    color = "#000000"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
     ax1 = pl.gca()
     logp_grid = 10**logp_grid
     pl.xscale("log")
     pl.yscale("log")
-    pl.plot(lower_bound, logp_grid, label=label, color=color)
-    pl.plot(upper_bound, logp_grid, color=color)
-    ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
     for EoS_Name in EoS_Names:
 
@@ -87,6 +84,10 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
         #pl.plot(density_grid, safety_logp_grid, label="Theoretical Model", linestyle="dashed", linewidth=4)
         pl.plot(density_grid, safety_logp_grid, label=EoS_Name, linewidth=4)
+
+    pl.plot(lower_bound, logp_grid, label=label, color=color)
+    pl.plot(upper_bound, logp_grid, color=color)
+    ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
     pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="gray")
     pl.text(1.75*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
