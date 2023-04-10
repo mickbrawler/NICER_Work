@@ -89,7 +89,7 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
         #pl.plot(density_grid, safety_logp_grid, label=EoS_Name, linewidth=2)
 
     pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="gray")
-    pl.text(1.76*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
+    pl.text(1.75*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
     pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16,color="black")
     pl.xlim([10**16.99, 10**18.25])
     pl.ylim([min(logp_grid), max(logp_grid)])

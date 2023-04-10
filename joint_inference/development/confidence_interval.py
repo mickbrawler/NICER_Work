@@ -39,8 +39,8 @@ def plot_intervals(outputfiles):
             pl.plot(upper_bound, logp_grid, color=color)
             ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
-        pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
-        pl.text(1.5*10**17,10**31.75,"Nuclear Density",fontsize=16,color="red")
+        pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="gray")
+        pl.text(1.75*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
         pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16,color="black")
         pl.xlim([10**16.99, 10**18.25])
         pl.ylim([min(logp_grid), max(logp_grid)])
