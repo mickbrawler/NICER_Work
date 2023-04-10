@@ -97,5 +97,5 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.ylabel('Pressure')
     pl.legend()
     #pl.savefig("plots/overlap_APR4EPP_EM_constraint_p_rho.png", bbox_inches='tight')
-    pl.savefig("plots/overlap_APR4EPP_joint_constraint_p_rho.png", bbox_inches='tight')
+    pl.savefig("plots/overlap_APR4EPP_Joint_constraint_p_rho.png", bbox_inches='tight')
 
