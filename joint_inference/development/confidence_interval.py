@@ -13,7 +13,7 @@ def plot_intervals(outputfiles):
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_J0740_XMM_hierarchical_confidence.txt"]]
 
-    plotsLabels = [["Detection Constraint"], ["Observation Constraint"], ["Detection Constraint", "Observation Constraint", "Joint Constraint"], ["Detection Constraint", "Observation Constraint", "Additional Observation Constraint", "Joint Constraint"]]
+    plotsLabels = [["Grav. wave"], ["X-ray Obs"], ["Grav. wave", "X-ray Obs", "Joint"], ["Grav. wave", "X-ray Obs 1", "X-ray Obs 2", "Joint"]]
 
     plotsColors = [["#d95f02"], ["#7570b3"], ["#d95f02", "#7570b3", "#000000"], ["#d95f02", "#7570b3", "#1b9e77", "#000000"]]
 
@@ -40,7 +40,8 @@ def plot_intervals(outputfiles):
             ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
 
         pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="red")
-        pl.text(10**17.75,10**33,"Super-Nuclear Density",fontsize=20)
+        pl.text(1.5*10**17,10**31.75,"Nuclear Density",fontsize=16,color="red")
+        pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16,color="black")
         pl.xlim([10**16.99, 10**18.25])
         pl.ylim([min(logp_grid), max(logp_grid)])
         pl.xlabel('Density')
