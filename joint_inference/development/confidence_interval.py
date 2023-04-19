@@ -32,20 +32,14 @@ def plot_intervals(outputfiles):
             logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
             ax1 = pl.gca()
-            logp_grid = 10**logp_grid
-            pl.xscale("log")
-            pl.yscale("log")
-            pl.plot(lower_bound, logp_grid, label=label, color=color)
-            pl.plot(upper_bound, logp_grid, color=color)
-            ax1.fill_betweenx(logp_grid, lower_bound, x2=upper_bound, color=color, alpha=0.45)
+            pl.plot(np.log10(lower_bound), logp_grid, label=label, color=color)
+            pl.plot(np.log10(upper_bound), logp_grid, color=color)
+            ax1.fill_betweenx(logp_grid, np.log10(lower_bound), x2=np.log10(upper_bound), color=color, alpha=0.45)
 
-        pl.vlines(x=2.3*10**17,ymin=min(logp_grid),ymax=max(logp_grid),color="gray")
-        pl.text(1.75*10**17,10**31.75,"Nuclear Density",fontsize=16,color="gray")
-        pl.text(10**17.75,10**31.75,"Super-Nuclear Density",fontsize=16,color="black")
-        pl.xlim([10**16.99, 10**18.25])
+        pl.xlim([16.99, 18.25])
         pl.ylim([min(logp_grid), max(logp_grid)])
-        pl.xlabel('Density')
-        pl.ylabel('Pressure')
+        pl.xlabel(r'$log10(\frac{kg}{m^3})$')
+        pl.ylabel(r'$log10(Pa)$')
         pl.legend()
         pl.savefig("plots/8th_cutoff_plotting/"+outputfile, bbox_inches='tight')
 
