@@ -48,7 +48,7 @@ def namedEoS_lines(EoS_Name):
 
     pl.plot(np.log10(density_grid), logp_grid, label=EoS_Name)
 
-    pl.xlim([17.1, 18.25])
+    pl.xlim([min(np.log10(density_grid)),max(np.log10(density_grid))])
     pl.xlabel(r'$log10(\frac{kg}{m^3})$')
     pl.ylabel(r'$log10(Pa)$')
     pl.legend()
@@ -86,7 +86,7 @@ def namedEoS_lines(EoS_Name):
 
     pl.plot(working_masses, working_radii, label=EoS_Name)
 
-    #pl.xlim([])
+    pl.xlim([min(working_masses),max(working_masses)])
     pl.xlabel("Mass (M$\odot$)")
     pl.ylabel("Radius (km)")
     pl.legend()
@@ -103,7 +103,7 @@ def namedEoS_lines(EoS_Name):
 
     pl.plot(working_masses, working_compactnesses, label=EoS_Name)
 
-    #pl.xlim([])
+    pl.xlim([min(working_masses),max(working_masses)])
     pl.xlabel("Mass (M$\odot$)")
     pl.ylabel("Compactness")
     pl.legend()
@@ -117,9 +117,9 @@ def namedEoS_lines(EoS_Name):
 
 def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False):
     # Plot the scatter and kde/scatter of a data file posterior
-    #labels = [r"$log10(\frac{kg}{m^3})$", r'$log10(Pa)$']
     #labels = ["Mass (M$\odot$)","Radius (km)",]
     #labels = ["Mass (M$\odot$)","Compactness",]
+    #labels = ["$\\tilde{\\Lambda}$","$q$"]
 
     ### scatter
     pl.clf()
@@ -130,7 +130,13 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
+    pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
+    pl.rc('xtick', direction='out', color='black', labelcolor='black')
+    pl.rc('ytick', direction='out', color='black', labelcolor='black')
+    pl.rc('lines', linewidth=2)
+
     pl.scatter(x,y,s=3)
+
     pl.xlabel(labels[0])
     pl.ylabel(labels[1])
     pl.savefig("plots/AstroClub2023/scatter_{}.png".format(name), bbox_inches='tight')
@@ -154,11 +160,16 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
 
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
+    pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
+    pl.rc('xtick', direction='out', color='black', labelcolor='black')
+    pl.rc('ytick', direction='out', color='black', labelcolor='black')
+    pl.rc('lines', linewidth=2)
+
     ax.pcolormesh(xx, yy, f)
+    #pl.scatter(x,y,s=1,color="black")
+
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
-    pl.scatter(x,y,s=1,color="black")
-
     pl.savefig("plots/AstroClub2023/kde_scatter_{}.png".format(name), bbox_inches='tight')
 
 def overlap_namedEoS_constraint_p_rho(EoS_Names):
@@ -170,11 +181,8 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
-    #File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"
     File = "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"
-    #label = "X-ray obs"
     label = "Joint"
-    #color = "#7570b3"
     color = "#000000"
     logp_grid, lower_bound, median, upper_bound = np.loadtxt(File).T
 
@@ -196,13 +204,11 @@ def overlap_namedEoS_constraint_p_rho(EoS_Names):
             except RuntimeError: 
                 continue # ran into runtime error at some point due to energydensityofpressure function
 
-        #pl.plot(density_grid, safety_logp_grid, label="Theoretical Model", linestyle="dashed", linewidth=4)
         pl.plot(np.log10(density_grid), safety_logp_grid, label=EoS_Name, linewidth=4)
 
     pl.xlim([16.99, 18.25])
     pl.xlabel(r'$log10(\frac{kg}{m^3})$')
     pl.ylabel(r'$log10(Pa)$')
     pl.legend()
-    #pl.savefig("plots/overlap_APR4EPP_EM_constraint_p_rho.png", bbox_inches='tight')
     pl.savefig("plots/AstroClub2023/overlap_proposedEoS_Joint_constraint_p_rho.png", bbox_inches='tight')
 
