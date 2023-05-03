@@ -115,7 +115,7 @@ def namedEoS_lines(EoS_Name):
     #lambda[0,2000]
     # Not as simple to do as radius mass data. lalsim has no function for it.
 
-def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False):
+def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False, keepEvery=2):
     # Plot the scatter and kde/scatter of a data file posterior
     #labels = ["Mass (M$\odot$)","Radius (km)",]
     #labels = ["Mass (M$\odot$)","Compactness",]
@@ -128,6 +128,15 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     if turn_to_km: y = data[:,1] / 1000
     else: y = data[:,1]
     
+    grab_every_mask = [1] + list(np.zeros(keepEvery-1))
+    grab_every_n = len(grab_every_mask)
+    shorten_index = np.tile(grab_every_mask,int(len(x)/grab_every_n))
+    leftovers = np.zeros(len(x)-len(shorten_index))
+    shorten_index = np.array(list(shorten_index)+list(leftovers)).astype(dtype=bool)
+
+    x = x[shorten_index]
+    y = y[shorten_index]
+
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
