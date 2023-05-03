@@ -3,8 +3,6 @@ import matplotlib.pyplot as pl
 import json
 import corner
 
-# Make x axis look like anarya's. Don't forget to update x axis
-
 def plot_intervals(outputfiles):
     # Plots differently sourced confidence intervals on top of each other.
 
@@ -13,7 +11,7 @@ def plot_intervals(outputfiles):
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
                   ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_J0740_XMM_hierarchical_confidence.txt"]]
 
-    plotsLabels = [["Grav. wave"], ["X-ray Obs"], ["Grav. wave", "X-ray Obs", "Joint"], ["Grav. wave", "X-ray Obs 1", "X-ray Obs 2", "Joint"]]
+    plotsLabels = [["GW170817"], ["J0030"], ["GW170817", "J0030", "Joint"], ["GW170817", "J0030", "J0740", "Joint"]]
 
     plotsColors = [["#d95f02"], ["#7570b3"], ["#d95f02", "#7570b3", "#000000"], ["#d95f02", "#7570b3", "#1b9e77", "#000000"]]
 
@@ -37,11 +35,10 @@ def plot_intervals(outputfiles):
             ax1.fill_betweenx(logp_grid, np.log10(lower_bound), x2=np.log10(upper_bound), color=color, alpha=0.45)
 
         pl.xlim([16.99, 18.25])
-        pl.ylim([min(logp_grid), max(logp_grid)])
         pl.xlabel(r'$log10(\frac{kg}{m^3})$')
         pl.ylabel(r'$log10(Pa)$')
         pl.legend()
-        pl.savefig("plots/8th_cutoff_plotting/"+outputfile, bbox_inches='tight')
+        pl.savefig("plots/AstroClub2023/"+outputfile, bbox_inches='tight')
 
 def corner_plots(outputfile):
     # Plots differently sourced corner plots on top of each other.
