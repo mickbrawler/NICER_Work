@@ -153,11 +153,6 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     f = np.reshape(kernel(positions).T, xx.shape)
 
     pl.clf()
-    fig = pl.figure()
-    ax = fig.gca()
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
@@ -165,11 +160,13 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
-    ax.pcolormesh(xx, yy, f)
-    #pl.scatter(x,y,s=1,color="black")
+    pl.pcolormesh(xx, yy, f)
+    pl.scatter(x,y,s=1,color="black")
 
-    ax.set_xlabel(labels[0])
-    ax.set_ylabel(labels[1])
+    pl.xlim([x_min, x_max])
+    pl.ylim([y_min, y_max])
+    pl.xlabel(labels[0])
+    pl.ylabel(labels[1])
     pl.savefig("plots/AstroClub2023/kde_scatter_{}.png".format(name), bbox_inches='tight')
 
 def overlap_namedEoS_constraint_p_rho(EoS_Names):
