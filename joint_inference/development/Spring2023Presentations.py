@@ -115,7 +115,7 @@ def namedEoS_lines(EoS_Name):
     #lambda[0,2000]
     # Not as simple to do as radius mass data. lalsim has no function for it.
 
-def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False, keepEvery=2):
+def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False, keepEvery=2, overlay_proposed=False):
     # Plot the scatter and kde/scatter of a data file posterior
     #labels = ["Mass (M$\odot$)","Radius (km)",]
     #labels = ["Mass (M$\odot$)","Compactness",]
@@ -171,6 +171,48 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
 
     pl.pcolormesh(xx, yy, f)
     pl.scatter(x,y,s=1,color="black")
+
+    if type(overlay_proposed) == str:
+
+        EoS_Name = "APR4_EPP"
+        eos = lalsim.SimNeutronStarEOSByName(EoS_Name)
+        fam = lalsim.CreateSimNeutronStarFamily(eos)
+
+        m_min = 1.0
+        max_mass = lalsim.SimNeutronStarMaximumMass(fam)/lal.MSUN_SI
+        max_mass = int(max_mass*1000)/1000
+        N = 1000
+        masses = np.linspace(m_min, max_mass, N)
+        masses = masses[masses <= max_mass]
+
+        working_masses = []
+        working_radii = []
+        working_compactnesses = []
+        for m in masses:
+            try:
+                rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                cc = m*lal.MRSUN_SI/rr
+                working_masses.append(m)
+                working_compactnesses.append(cc)
+                working_radii.append(rr)
+            except RuntimeError:
+                break
+
+        working_radii = np.array(working_radii) / 1000
+
+        name = name + "_overlayed_proposed"
+
+        if overlay_proposed == "rm":
+        ### radius mass
+
+            pl.plot(working_masses, working_radii, label=EoS_Name)
+            pl.legend()
+
+        if overlay_proposed == "cm":
+        ### compactness mass
+
+            pl.plot(working_masses, working_compactnesses, label=EoS_Name)
+            pl.legend()
 
     pl.xlim([x_min, x_max])
     pl.ylim([y_min, y_max])
