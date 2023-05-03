@@ -146,7 +146,7 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     y_min, y_max = min(y), max(y)
 
     # Perform the kernel density estimate
-    xx, yy = np.mgrid[x_min:x_max:1000j, y_min:y_max:1000j] # two 2d arrays
+    xx, yy = np.mgrid[x_min:x_max:100j, y_min:y_max:100j] # two 2d arrays
     positions = np.vstack([xx.ravel(), yy.ravel()])
     pairs = np.vstack([x, y])
     kernel = st.gaussian_kde(pairs)
