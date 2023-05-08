@@ -1,6 +1,8 @@
 from GWXtreme import eos_prior as ep
+from GWXtreme import eos_model_selection as ems
 from multiprocessing import cpu_count, Pool
 from scipy import interpolate
+from scipy.interpolate import interp1d
 import scipy.stats as st
 import lalsimulation as lalsim
 import lal
@@ -118,13 +120,31 @@ def namedEoS_lines(EoS_Name):
     ### chirp-mass ~tidal-deformbability
 
     q_min, q_max = 0.7, 1.0
-    mc = np.mean(self.data['mc_source'])
-    minMass = 0.8
+    #mc = np.mean(self.data['mc_source'])
+    mc = 1.187 # ran above line and got this.
+    minMass = lalsim.SimNeutronStarFamMinimumMass(fam)
+    maxMass = lalsim.SimNeutronStarMaximumMass(fam)
     q = np.linspace(q_min, q_max, N)
-    m1, m2 = getMasses(q, mc)
 
-    m1, m2, q = apply_mass_constraint(m1, m2, q, minMass)
-    LambdaT = get_LambdaT_for_eos(m1, m2, max_mass_eos, eosfunc)
+    m1, m2 = ems.getMasses(q, mc)
+    m1, m2, q = ems.apply_mass_constraint(m1, m2, q, minMass)
+    LambdaT = ems.get_LambdaT_for_eos(m1, m2, maxMass, eosfunc)
+
+    pl.clf()
+    pl.figure(figsize=(12,12))
+    pl.rc('font', size=20)
+    pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
+    pl.rc('xtick', direction='out', color='black', labelcolor='black')
+    pl.rc('ytick', direction='out', color='black', labelcolor='black')
+    pl.rc('lines', linewidth=2)
+
+    pl.plot(LambdaT, q, label=EoS_Name)
+
+    pl.xlim([min(working_masses),max(working_masses)])
+    pl.xlabel("Tidal-Deformability")
+    pl.ylabel("q")
+    pl.legend()
+    pl.savefig("plots/AstroClub2023/"+EoS_Name+"_q_Lt.png", bbox_inches='tight')
 
 def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False, keepEvery=2, overlay_proposed=False):
     # Plot the scatter and kde/scatter of a data file posterior
