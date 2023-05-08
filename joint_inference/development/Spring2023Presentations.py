@@ -142,8 +142,8 @@ def namedEoS_lines(EoS_Name):
     pl.plot(LambdaT, q, label=EoS_Name)
 
     pl.xlim([min(LambdaT),max(LambdaT)])
-    pl.xlabel("Tidal-Deformability")
-    pl.ylabel("q")
+    pl.xlabel("$\\tilde{\\Lambda}$")
+    pl.ylabel("$q$")
     pl.legend()
     pl.savefig("plots/AstroClub2023/"+EoS_Name+"_q_Lt.png", bbox_inches='tight')
 
