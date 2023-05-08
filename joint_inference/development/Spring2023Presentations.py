@@ -122,7 +122,8 @@ def namedEoS_lines(EoS_Name):
     q_min, q_max = 0.7, 1.0
     #mc = np.mean(self.data['mc_source'])
     mc = 1.187 # ran above line and got this.
-    minMass = lalsim.SimNeutronStarFamMinimumMass(fam)
+    #minMass = lalsim.SimNeutronStarFamMinimumMass(fam)
+    minMass = 0.8
     maxMass = lalsim.SimNeutronStarMaximumMass(fam)
     q = np.linspace(q_min, q_max, N)
 
@@ -140,7 +141,7 @@ def namedEoS_lines(EoS_Name):
 
     pl.plot(LambdaT, q, label=EoS_Name)
 
-    pl.xlim([min(working_masses),max(working_masses)])
+#    pl.xlim([min(LambdaT),max(LambdaT)])
     pl.xlabel("Tidal-Deformability")
     pl.ylabel("q")
     pl.legend()
