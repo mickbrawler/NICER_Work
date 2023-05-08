@@ -220,15 +220,21 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
         working_masses = []
         working_radii = []
         working_compactnesses = []
+        Lambdas = []
         for m in masses:
             try:
                 rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+                kk = lalsim.SimNeutronStarLoveNumberK2(m*lal.MSUN_SI, fam)
                 cc = m*lal.MRSUN_SI/rr
+                Lambdas.append((2/3)*kk/(cc**5))
                 working_masses.append(m)
                 working_compactnesses.append(cc)
                 working_radii.append(rr)
             except RuntimeError:
                 break
+        Lambdas = np.array(Lambdas)
+        gravMass = np.array(working_masses)
+        eosfunc = interp1d(gravMass, Lambdas)
 
         working_radii = np.array(working_radii) / 1000
 
