@@ -64,15 +64,21 @@ def namedEoS_lines(EoS_Name):
     working_masses = []
     working_radii = []
     working_compactnesses = []
+    Lambdas = []
     for m in masses:
         try:
             rr = lalsim.SimNeutronStarRadius(m*lal.MSUN_SI, fam)
+            kk = lalsim.SimNeutronStarLoveNumberK2(m*lal.MSUN_SI, fam)
             cc = m*lal.MRSUN_SI/rr
+            Lambdas.append((2/3)*kk/(cc**5))
             working_masses.append(m)
             working_compactnesses.append(cc)
             working_radii.append(rr)
         except RuntimeError:
             break
+    Lambdas = np.array(Lambdas)
+    gravMass = np.array(working_masses)
+    eosfunc = interp1d(gravMass, Lambdas)
 
     working_radii = np.array(working_radii) / 1000
 
@@ -111,9 +117,14 @@ def namedEoS_lines(EoS_Name):
 
     ### chirp-mass ~tidal-deformbability
 
-    #q[0.7,1.0]
-    #lambda[0,2000]
-    # Not as simple to do as radius mass data. lalsim has no function for it.
+    q_min, q_max = 0.7, 1.0
+    mc = np.mean(self.data['mc_source'])
+    minMass = 0.8
+    q = np.linspace(q_min, q_max, N)
+    m1, m2 = getMasses(q, mc)
+
+    m1, m2, q = apply_mass_constraint(m1, m2, q, minMass)
+    LambdaT = get_LambdaT_for_eos(m1, m2, max_mass_eos, eosfunc)
 
 def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=False, keepEvery=2, overlay_proposed=False):
     # Plot the scatter and kde/scatter of a data file posterior
