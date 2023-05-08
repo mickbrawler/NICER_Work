@@ -141,7 +141,7 @@ def namedEoS_lines(EoS_Name):
 
     pl.plot(LambdaT, q, label=EoS_Name)
 
-#    pl.xlim([min(LambdaT),max(LambdaT)])
+    pl.xlim([min(LambdaT),max(LambdaT)])
     pl.xlabel("Tidal-Deformability")
     pl.ylabel("q")
     pl.legend()
@@ -244,6 +244,24 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
         ### compactness mass
 
             pl.plot(working_masses, working_compactnesses, label=EoS_Name)
+            pl.legend()
+
+        if overlay_proposed == "qLt":
+        ### compactness mass
+
+            q_min, q_max = 0.7, 1.0
+            #mc = np.mean(self.data['mc_source'])
+            mc = 1.187 # ran above line and got this.
+            #minMass = lalsim.SimNeutronStarFamMinimumMass(fam)
+            minMass = 0.8
+            maxMass = lalsim.SimNeutronStarMaximumMass(fam)
+            q = np.linspace(q_min, q_max, N)
+
+            m1, m2 = ems.getMasses(q, mc)
+            m1, m2, q = ems.apply_mass_constraint(m1, m2, q, minMass)
+            LambdaT = ems.get_LambdaT_for_eos(m1, m2, maxMass, eosfunc)
+
+            pl.plot(LambdaT, q, label=EoS_Name)
             pl.legend()
 
     pl.xlim([x_min, x_max])
