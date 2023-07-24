@@ -6,14 +6,17 @@ import corner
 def plot_intervals(outputfiles):
     # Plots differently sourced confidence intervals on top of each other.
 
-    plotsFiles = [["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"],
-                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"],
-                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
-                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_J0740_XMM_hierarchical_confidence.txt"]]
+#    plotsFiles = [["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt"],
+#                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt"],
+#                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_hierarchical_confidence.txt"],
+#                  ["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0030_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt", "run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_GW170817_J0030_J0740_XMM_hierarchical_confidence.txt"]]
+    plotsFiles = [["run_data/8th_cutoff_plotting/spectral_p_vs_rho_cutoff_W100_S10000_J0740_XMM_confidence.txt"]]
 
-    plotsLabels = [["GW170817"], ["J0030"], ["GW170817", "J0030", "Joint"], ["GW170817", "J0030", "J0740", "Joint"]]
+#    plotsLabels = [["GW170817"], ["J0030"], ["GW170817", "J0030", "Joint"], ["GW170817", "J0030", "J0740", "Joint"]]
+    plotsLabels = [["J0740"]]
 
-    plotsColors = [["#d95f02"], ["#7570b3"], ["#d95f02", "#7570b3", "#000000"], ["#d95f02", "#7570b3", "#1b9e77", "#000000"]]
+#    plotsColors = [["#d95f02"], ["#7570b3"], ["#d95f02", "#7570b3", "#000000"], ["#d95f02", "#7570b3", "#1b9e77", "#000000"]]
+    plotsColors = [["#1b9e77"]]
 
     pl.figure(figsize=(12,12))
     pl.rc('font', size=20)
