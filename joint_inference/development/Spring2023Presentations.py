@@ -8,13 +8,6 @@ import lalsimulation as lalsim
 import lal
 import numpy as np
 import matplotlib.pyplot as pl
-import seaborn as sns
-import h5py
-import json
-import emcee
-import math
-import random
-import argparse
 import scipy.stats as st
 
 # This file's functions will produce the proper mass radius distribution for the NICER project
@@ -243,13 +236,13 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
         if overlay_proposed == "rm":
         ### radius mass
 
-            pl.plot(working_masses, working_radii, label=EoS_Name)
+            pl.plot(working_masses, working_radii, label=EoS_Name, color="#f03b20")
             pl.legend()
 
         if overlay_proposed == "cm":
         ### compactness mass
 
-            pl.plot(working_masses, working_compactnesses, label=EoS_Name)
+            pl.plot(working_masses, working_compactnesses, label=EoS_Name, color="#f03b20")
             pl.legend()
 
         if overlay_proposed == "qLt":
@@ -267,14 +260,15 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
             m1, m2, q = ems.apply_mass_constraint(m1, m2, q, minMass)
             LambdaT = ems.get_LambdaT_for_eos(m1, m2, maxMass, eosfunc)
 
-            pl.plot(LambdaT, q, label=EoS_Name)
+            pl.plot(LambdaT, q, label=EoS_Name, color="#f03b20")
             pl.legend()
 
     pl.xlim([x_min, x_max])
     pl.ylim([y_min, y_max])
     pl.xlabel(labels[0])
     pl.ylabel(labels[1])
-    pl.savefig("plots/AstroClub2023/kde_scatter_{}.png".format(name), bbox_inches='tight')
+    #pl.savefig("plots/AstroClub2023/kde_scatter_{}.png".format(name), bbox_inches='tight')
+    pl.savefig("plots/Fall2023/kde_scatter_{}.png".format(name), bbox_inches='tight')
 
 def overlap_namedEoS_constraint_p_rho(EoS_Names):
 
