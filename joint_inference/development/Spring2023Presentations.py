@@ -165,8 +165,8 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
-    pl.rc('xtick', direction='out', color='black', labelcolor='black')
-    pl.rc('ytick', direction='out', color='black', labelcolor='black')
+    #pl.rc('xtick', direction='out', color='black', labelcolor='black')
+    #pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
     pl.scatter(x,y,s=3)
@@ -190,12 +190,12 @@ def plot_scatter_AND_gaussian_kde_scatter(datafile, name, labels, turn_to_km=Fal
     pl.rcParams.update({"font.size":20})
     pl.figure(figsize=(12,12))
     pl.rc('axes', facecolor='#E6E6E6', edgecolor='black')
-    pl.rc('xtick', direction='out', color='black', labelcolor='black')
-    pl.rc('ytick', direction='out', color='black', labelcolor='black')
+    #pl.rc('xtick', direction='out', color='black', labelcolor='black')
+    #pl.rc('ytick', direction='out', color='black', labelcolor='black')
     pl.rc('lines', linewidth=2)
 
     pl.pcolormesh(xx, yy, f)
-    pl.scatter(x,y,s=1,color="black")
+    pl.scatter(x,y,s=1,color="black",alpha=0.25)
 
     if type(overlay_proposed) == str:
 
